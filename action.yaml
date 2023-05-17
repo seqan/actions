@@ -1,0 +1,91 @@
+# action.yaml
+name: 'SeqAn2 - Tools'
+description: 'Constructs a basic environment required to test SeqAn2 tools'
+inputs:
+  name:
+    description: "Name of this configuration, used for ccache"
+    required: true
+  cc:
+    description: "CC tool"
+    required: true
+  cxx:
+    description: "CPP tool"
+    required: true
+  cxx_flags:
+    description: "additional cxx flags"
+    required: false
+    default: ""
+  build_type:
+    description: "CMake build type"
+    required: true
+env:
+  CMAKE_VERSION: 3.15.0
+  TZ: Europe/Berlin
+
+runs:
+  using: 'composite'
+  steps:
+   - name: Checkout Repo
+     uses: actions/checkout@v3
+     with:
+       path: repo
+       fetch-depth: 2
+       submodules: true
+   - name: Fetch Seqan3 CI tools
+     shell: bash
+     id: seqan3-ci-tools
+     run: |
+       git clone https://github.com/seqan/seqan3 --depth 1 seqan3
+       bash ./seqan3/.github/workflows/scripts/configure_apt.sh
+       bash ./seqan3/.github/workflows/scripts/install_cmake.sh
+       sudo apt-get install --yes ccache libboost-dev libbz2-dev libxml2-utils zlib1g-dev ${{ inputs.compiler }}
+   - name: Tool versions
+     shell: bash
+     run: |
+       env cmake --version
+       env ${{ matrix.cxx }} --version
+   - name: Setup Python
+     uses: actions/setup-python@v4
+     with:
+       python-version: 3.x
+   - name: Load ccache
+     uses: actions/cache@v3
+     with:
+       path: .ccache
+       key: ${{ runner.os }}-${{ inputs.name }}-ccache-${{ github.ref }}-${{ github.run_number }}
+       # Restoring: From current branch, otherwise from base branch, otherwise from any branch.
+       restore-keys: |
+         ${{ runner.os }}-${{ inputs.name }}-ccache-${{ github.ref }}
+         ${{ runner.os }}-${{ inputs.name }}-ccache-${{ github.base_ref }}
+         ${{ runner.os }}-${{ inputs.name }}-ccache-
+    - name: Configure tests
+      env:
+        CXX: ${{ inputs.cxx }}
+        CC: ${{ inputs.cc }}
+      run: |
+        mkdir build
+        cd build
+        cmake ../repo -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} \
+                      -DCMAKE_CXX_FLAGS="${{ inputs.cxx_flags }} -Wextra -Werror" \
+                      -DSEQAN_DISABLE_VERSION_CHECK=ON \
+                      -DSEQAN_GH_ACTIONS_BUILD:BOOL=ON \
+                      -DPython3_ROOT_DIR=${pythonLocation} \
+                      -DPython3_EXECUTABLE=${pythonLocation}/bin/python3 \
+                      -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+                      -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+    - name: Build tests
+      env:
+        CCACHE_BASEDIR: ${{ github.workspace }}
+        CCACHE_DIR: ${{ github.workspace }}/.ccache
+        CCACHE_COMPRESS: true
+        CCACHE_COMPRESSLEVEL: 6
+        CCACHE_MAXSIZE: 200M
+      run: |
+        cd build
+        make -k -j2
+
+    - name: Run tests
+      run: |
+        cd build
+        ctest . -j2 --output-on-failure --timeout 240 || ctest . -j2 --output-on-failure --timeout 240 --rerun-failed
