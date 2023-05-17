@@ -1,0 +1,47 @@
+# action.yaml
+name: 'SeqAn2 - Tools'
+description: 'Constructs a basic environment required to test SeqAn2 tools'
+inputs:
+  name:
+    description: "Name of this configuration, used for ccache"
+    required: true
+  compiler:
+    description: "Compiler to preinstall"
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+   - name: Checkout Repo
+     uses: actions/checkout@v3
+     with:
+       path: repo
+       fetch-depth: 2
+       submodules: true
+   - name: Fetch Seqan3 CI tools
+     shell: bash
+     id: seqan3-ci-tools
+     run: |
+       git clone https://github.com/seqan/seqan3 --depth 1 seqan3
+       bash ./seqan3/.github/workflows/scripts/configure_apt.sh
+       bash ./seqan3/.github/workflows/scripts/install_cmake.sh
+       sudo apt-get install --yes ccache libboost-dev libbz2-dev libxml2-utils zlib1g-dev ${{ inputs.compiler }}
+   - name: Tool versions
+     shell: bash
+     run: |
+       env cmake --version
+       env ${{ matrix.cxx }} --version
+   - name: Setup Python
+     uses: actions/setup-python@v4
+     with:
+       python-version: 3.x
+   - name: Load ccache
+     uses: actions/cache@v3
+     with:
+       path: .ccache
+       key: ${{ runner.os }}-${{ inputs.name }}-ccache-${{ github.ref }}-${{ github.run_number }}
+       # Restoring: From current branch, otherwise from base branch, otherwise from any branch.
+       restore-keys: |
+         ${{ runner.os }}-${{ inputs.name }}-ccache-${{ github.ref }}
+         ${{ runner.os }}-${{ inputs.name }}-ccache-${{ github.base_ref }}
+         ${{ runner.os }}-${{ inputs.name }}-ccache-
