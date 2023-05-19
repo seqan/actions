@@ -1,0 +1,73 @@
+name: 'Setup CI tools'
+description: 'Installs dependencies for SeqAn CI'
+inputs:
+  compiler:
+    description: "Compiler to install, e.g., gcc-12 or clang-15."
+    required: true
+  cmake:
+    description: "CMake version to install, e.g., 3.16.9."
+    required: true
+  ccache_size:
+    description: "The ccache maximum size."
+    required: false
+    default: 75M
+  use_actions_cache:
+    description: "Configure actions/cache for ccache. true or false."
+    required: false
+    default: true
+runs:
+  using: 'composite'
+  steps:
+  - name: Configure APT
+    if: runner.os == 'Linux'
+    shell: bash
+    run: ${{ github.action_path }}/configure_apt.sh
+
+  - name: Configure Homebrew
+    if: runner.os == 'macOS'
+    uses: Homebrew/actions/setup-homebrew@master
+
+  - name: Install CMake
+    env:
+      CMAKE_VERSION: ${{ inputs.cmake }}
+    shell: bash
+    run: ${{ github.action_path }}/install_cmake.sh
+
+  - name: Install ccache
+    shell: bash
+    run: ${{ github.action_path }}/install.sh ccache
+
+  - name: Install compiler ${{ inputs.compiler }}
+    if: runner.os == 'Linux'
+    env:
+      CC: ${{ inputs.compiler }}
+    shell: bash
+    run: ${{ github.action_path }}/install.sh $(echo ${CC/gcc/g++})
+
+  - name: Install compiler ${{ inputs.compiler }}
+    if: runner.os == 'macOS'
+    env:
+      CC: ${{ inputs.compiler }}
+    shell: bash
+    run: ${{ github.action_path }}/install.sh $(echo ${CC/clang/llvm} | awk -F '-' '{print $1, $2}')
+
+  - name: Export ccache config
+    shell: bash
+    run: |
+      echo "CCACHE_BASEDIR=${{ github.workspace }}" >> "$GITHUB_ENV"
+      echo "CCACHE_DIR=${{ github.workspace }}/.ccache" >> "$GITHUB_ENV"
+      echo "CCACHE_COMPRESS=true" >> "$GITHUB_ENV"
+      echo "CCACHE_COMPRESSLEVEL=12" >> "$GITHUB_ENV"
+      echo "CCACHE_MAXSIZE=${{ inputs.ccache_size }}" >> "$GITHUB_ENV"
+
+  - name: Load ccache
+    if: inputs.use_actions_cache == 'true'
+    uses: actions/cache@v3
+    with:
+      path: ${{ env.CCACHE_DIR }}
+      key: ${{ runner.os }}-${{ matrix.name }}-ccache-${{ github.ref }}-${{ github.run_number }}
+      # Restoring: From current branch, otherwise from base branch, otherwise from any branch.
+      restore-keys: |
+        ${{ runner.os }}-${{ matrix.name }}-ccache-${{ github.ref }}
+        ${{ runner.os }}-${{ matrix.name }}-ccache-${{ github.base_ref }}
+        ${{ runner.os }}-${{ matrix.name }}-ccache-
