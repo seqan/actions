@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+CMAKE_VERSION="$1"
+
 if [ "$RUNNER_OS" == "Linux" ]; then
     OS="Linux"
     CMAKE_PATH="/tmp/cmake-${CMAKE_VERSION}-${OS}-x86_64/bin"

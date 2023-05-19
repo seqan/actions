@@ -1,0 +1,12 @@
+name: 'Setup Doxygen'
+description: 'Installs Doxygen'
+inputs:
+  doxygen:
+    description: "Doxygen version to install, e.g., 1.9.6."
+    required: true
+runs:
+  using: 'composite'
+  steps:
+  - name: Install Doxygen
+    shell: bash
+    run: ${{ github.action_path }}/install_doxygen.sh ${{ inputs.doxygen }}

@@ -4,9 +4,6 @@ inputs:
   compiler:
     description: "Compiler to install, e.g., gcc-12 or clang-15."
     required: true
-  cmake:
-    description: "CMake version to install, e.g., 3.16.9."
-    required: true
   ccache_size:
     description: "The ccache maximum size."
     required: false
@@ -18,38 +15,26 @@ inputs:
 runs:
   using: 'composite'
   steps:
-  - name: Configure APT
-    if: runner.os == 'Linux'
-    shell: bash
-    run: ${{ github.action_path }}/configure_apt.sh
-
-  - name: Configure Homebrew
-    if: runner.os == 'macOS'
-    uses: Homebrew/actions/setup-homebrew@master
-
-  - name: Install CMake
-    env:
-      CMAKE_VERSION: ${{ inputs.cmake }}
-    shell: bash
-    run: ${{ github.action_path }}/install_cmake.sh
+  - name: Setup Package Manager
+    uses: seqan/actions/setup_package_manager@main
 
   - name: Install ccache
     shell: bash
-    run: ${{ github.action_path }}/install.sh ccache
+    run: install.sh ccache
 
   - name: Install compiler ${{ inputs.compiler }}
     if: runner.os == 'Linux'
     env:
       CC: ${{ inputs.compiler }}
     shell: bash
-    run: ${{ github.action_path }}/install.sh $(echo ${CC/gcc/g++})
+    run: install.sh $(echo ${CC/gcc/g++})
 
   - name: Install compiler ${{ inputs.compiler }}
     if: runner.os == 'macOS'
     env:
       CC: ${{ inputs.compiler }}
     shell: bash
-    run: ${{ github.action_path }}/install.sh $(echo ${CC/clang/llvm} | awk -F '-' '{print $1, $2}')
+    run: install.sh $(echo ${CC/clang/llvm} | awk -F '-' '{print $1, $2}')
 
   - name: Export ccache config
     shell: bash
