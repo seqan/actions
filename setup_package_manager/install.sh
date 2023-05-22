@@ -3,6 +3,9 @@ set -Eeuo pipefail
 
 install_via_brew()
 {
+    brew_package_name="$1" # llvm@15
+    package_name=$(echo $brew_package_name | awk -F '@' '{print $1; }') # llvm
+
     # General idea:
     # `brew list --versions` returns 1 if package is installed, and 0 otherwise. By combining it with some other command
     # via `&&`, we can run the second command depending on whether the package is installed.
