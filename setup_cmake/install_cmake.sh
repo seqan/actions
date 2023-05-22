@@ -6,9 +6,12 @@ CMAKE_VERSION="$1"
 if [ "$RUNNER_OS" == "Linux" ]; then
     OS="Linux"
     CMAKE_PATH="/tmp/cmake-${CMAKE_VERSION}-${OS}-x86_64/bin"
-else
+elif [ "$RUNNER_OS" == "macOS" ]; then
     OS="Darwin"
     CMAKE_PATH="/tmp/cmake-${CMAKE_VERSION}-${OS}-x86_64/CMake.app/Contents/bin"
+else
+    echo "OS ${$RUNNER_OS} is not supported"
+    exit 1
 fi
 
 mkdir -p /tmp/cmake-download

@@ -1,33 +1,14 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-if [ "$RUNNER_OS" == "Linux" ]; then
-    sudo apt-get install --yes "$@"
-else
-    case $# in
-        1 )
-            package_name=$1
-            brew_package_name=$1 ;;
-        2 )
-            package_name=$1
-            brew_package_name="${1}@${2}" ;;
-        * )
-            echo "Usage: install_via_brew.sh <package_name> [version]"
-            exit 1 ;;
-    esac
-
-    set -e
-    set -x
-
+install_via_brew()
+{
     # General idea:
     # `brew list --versions` returns 1 if package is installed, and 0 otherwise. By combining it with some other command
     # via `&&`, we can run the second command depending on whether the package is installed.
     # package_name: The package name without a version, e.g. "ccache" and "gcc".
     # brew_package_name: The package followed by an optional version, e.g. "ccache" and "gcc@11".
     # `--force-bottle` will cause brew to use precompiled binaries. Sometimes brew likes to build compilers from scratch.
-
-    export HOMEBREW_NO_INSTALL_CLEANUP=1 # Do not run brew cleanup automatically.
-    export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 # Do not automatically update packages.
 
     # If the package is installed, we unlink the package. brew unlink does not take a version.
     brew list --versions $brew_package_name && \
@@ -51,4 +32,25 @@ else
         ln -s $install_prefix/clang++ $install_prefix/clang++-$2 || true
         echo "$install_prefix" >> $GITHUB_PATH
     fi
+}
+
+if [ "$RUNNER_OS" == "Linux" ]; then
+    # gcc-13 -> g++-13
+    for ARG in "$@"; do
+        sudo apt-get install --yes $(echo ${ARG/gcc/g++})
+    done
+elif [ "$RUNNER_OS" == "macOS" ]; then
+    export HOMEBREW_NO_INSTALL_CLEANUP=1 # Do not run brew cleanup automatically.
+    export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 # Do not automatically update packages.
+
+    for ARG in "$@"; do
+        # clang-15 -> llvm@15
+        if [[ $ARG == clang* ]]; then
+            ARG=$(echo ${ARG/clang/llvm} | awk -F '-' '{print $1"@"$2}')
+        fi
+        install_via_brew $ARG
+    done
+else
+    echo "OS ${$RUNNER_OS} is not supported"
+    exit 1
 fi

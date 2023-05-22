@@ -23,18 +23,11 @@ runs:
     run: install.sh ccache
 
   - name: Install compiler ${{ inputs.compiler }}
-    if: runner.os == 'Linux'
-    env:
-      CC: ${{ inputs.compiler }}
     shell: bash
-    run: install.sh $(echo ${CC/gcc/g++})
-
-  - name: Install compiler ${{ inputs.compiler }}
-    if: runner.os == 'macOS'
-    env:
-      CC: ${{ inputs.compiler }}
-    shell: bash
-    run: install.sh $(echo ${CC/clang/llvm} | awk -F '-' '{print $1, $2}')
+    run: |
+      install.sh ${{ inputs.compiler }}
+      echo "CC=${{ inputs.compiler }}" >> "$GITHUB_ENV"
+      echo "CXX=$(echo ${{ inputs.compiler }} | sed 's/gcc/g++/' | sed 's/clang/clang++/')" >> "$GITHUB_ENV"
 
   - name: Export ccache config
     shell: bash
