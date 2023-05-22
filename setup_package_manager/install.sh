@@ -47,8 +47,8 @@ elif [ "$RUNNER_OS" == "macOS" ]; then
     export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 # Do not automatically update packages.
 
     for ARG in "$@"; do
-        # clang-15 -> llvm@15
-        if [[ $ARG == clang* ]]; then
+        # clang-15 -> llvm@15, gcc-13 -> gcc@13
+        if [[ $ARG == clang* || $ARG == gcc* ]]; then
             ARG=$(echo ${ARG/clang/llvm} | awk -F '-' '{print $1"@"$2}')
         fi
         install_via_brew $ARG
