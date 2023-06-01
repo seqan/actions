@@ -18,7 +18,7 @@ runs:
     run: |
       SCRIPT_DIR=/tmp/seqan_actions_setup_package_manager
       mkdir -p ${SCRIPT_DIR}
-      cp ${{ github.action_path }}/install.sh ${SCRIPT_DIR}
+      cp ${{ github.action_path }}/install ${SCRIPT_DIR}
       echo "${SCRIPT_DIR}" >> $GITHUB_PATH
 
   - name: Export environment variable

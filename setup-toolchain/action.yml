@@ -16,16 +16,16 @@ runs:
   using: 'composite'
   steps:
   - name: Setup Package Manager
-    uses: seqan/actions/setup_package_manager@main
+    uses: seqan/actions/setup-package-manager@main
 
   - name: Install ccache
     shell: bash
-    run: install.sh ccache
+    run: install ccache
 
   - name: Install compiler ${{ inputs.compiler }}
     shell: bash
     run: |
-      install.sh ${{ inputs.compiler }}
+      install ${{ inputs.compiler }}
       echo "CC=${{ inputs.compiler }}" >> "$GITHUB_ENV"
       echo "CXX=$(echo ${{ inputs.compiler }} | sed 's/gcc/g++/' | sed 's/clang/clang++/')" >> "$GITHUB_ENV"
 
