@@ -21,6 +21,7 @@ runs:
       env:
           GITHUB_TOKEN: ${{ inputs.token }}
           PR_URL: ${{ github.event.pull_request.html_url }}
+      shell: bash
       run: gh pr edit $PR_URL --add-label "lint"
 
     - name: Checkout
@@ -33,6 +34,7 @@ runs:
 
     - name: Get changed files
       id: changed_files
+      shell: bash
       run: |
         CPP_LIST=$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} | \
         { grep -v -E "(lib/)" || test $? = 1; } | \
@@ -45,6 +47,7 @@ runs:
         echo "cmake_list=$CMAKE_LIST" >> $GITHUB_OUTPUT
 
     - name: Switch to fork
+      shell: bash
       run: |
         git remote add fork ${{ github.event.pull_request.head.repo.html_url }}
         git fetch fork ${{ github.event.pull_request.head.ref }}
@@ -66,6 +69,7 @@ runs:
 
     - name: Check git status
       id: git_status
+      shell: bash
       run: |
         if [[ -z $(git status -uno --porcelain) ]]; then
           echo "commit_required=" >> $GITHUB_OUTPUT
@@ -84,6 +88,7 @@ runs:
 
     - name: Commit changes
       if: ${{ steps.git_status.outputs.commit_required }}
+      shell: bash
       run: |
         git config user.name "seqan-actions[bot]"
         git config user.email "seqan-actions@users.noreply.github.com"
@@ -96,4 +101,5 @@ runs:
       env:
           GITHUB_TOKEN: ${{ inputs.token }}
           PR_URL: ${{ github.event.pull_request.html_url }}
+      shell: bash
       run: gh pr edit $PR_URL --remove-label "lint"
