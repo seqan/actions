@@ -2,7 +2,22 @@
 
 version: 2
 updates:
-
+  - package-ecosystem: "github-actions"
+    directory: "/lint"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "github-actions"
+    directory: "/setup-cmake"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "github-actions"
+    directory: "/setup-doxygen"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "github-actions"
+    directory: "/setup-package-manager"
+    schedule:
+      interval: "weekly"
   - package-ecosystem: "github-actions"
     directory: "/setup-toolchain"
     schedule:
