@@ -8,7 +8,5 @@ runs:
   using: 'composite'
   steps:
   - name: Install CMake
-    env:
-      RUNNER_OS: ${{ runner.os }}
     shell: bash
     run: ${{ github.action_path }}/install_cmake.sh ${{ inputs.cmake }}
