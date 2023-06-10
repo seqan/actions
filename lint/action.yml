@@ -37,12 +37,12 @@ runs:
       shell: bash
       run: |
         CPP_LIST=$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} | \
-        { grep -v -E "(lib/)" || test $? = 1; } | \
+        { grep -v -E "(lib/|contrib/|submodules/)" || test $? = 1; } | \
         { grep -E "(\.cpp|\.hpp)$" || test $? = 1; } | xargs)
         echo "cpp_list=$CPP_LIST" >> $GITHUB_OUTPUT
 
         CMAKE_LIST=$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} | \
-        { grep -v -E "(lib/)" || test $? = 1; } | \
+        { grep -v -E "(lib/|contrib/|submodules/)" || test $? = 1; } | \
         { grep -E "(\.cmake|CMakeLists.txt)$" || test $? = 1; } | xargs)
         echo "cmake_list=$CMAKE_LIST" >> $GITHUB_OUTPUT
 
