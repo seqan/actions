@@ -5,6 +5,7 @@ install_via_brew()
 {
     brew_package_name="$1" # llvm@15
     package_name=$(echo $brew_package_name | awk -F '@' '{print $1; }') # llvm
+    package_version=$(echo $brew_package_name | awk -F '@' '{print $2; }') # 15
 
     # General idea:
     # `brew list --versions` returns 1 if package is installed, and 0 otherwise. By combining it with some other command
@@ -30,9 +31,9 @@ install_via_brew()
 
     # brew's llvm packages do not create symlinks as they might interfere with Apple's clang installation.
     # Hence, we need to do it explicitly.
-    if [ "$package_name" == "llvm" ] && [[ $# -eq 2 ]]; then
+    if [ "$package_name" == "llvm" ]; then
         install_prefix=$(brew --prefix $brew_package_name)/bin
-        ln -s $install_prefix/clang++ $install_prefix/clang++-$2 || true
+        ln -s $install_prefix/clang++ $install_prefix/clang++-$package_version || true
         echo "$install_prefix" >> $GITHUB_PATH
     fi
 }
