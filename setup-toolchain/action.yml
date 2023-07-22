@@ -43,9 +43,9 @@ runs:
     uses: actions/cache@v3
     with:
       path: ${{ env.CCACHE_DIR }}
-      key: ${{ runner.os }}-${{ matrix.name }}-ccache-${{ github.ref }}-${{ github.run_number }}
+      key: ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.name }}-${{ github.ref }}
       # Restoring: From current branch, otherwise from base branch, otherwise from any branch.
       restore-keys: |
-        ${{ runner.os }}-${{ matrix.name }}-ccache-${{ github.ref }}
-        ${{ runner.os }}-${{ matrix.name }}-ccache-${{ github.base_ref }}
-        ${{ runner.os }}-${{ matrix.name }}-ccache-
+        ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.name }}-${{ github.ref }}
+        ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.name }}-${{ github.base_ref }}
+        ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.name }}
