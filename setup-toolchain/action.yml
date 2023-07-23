@@ -37,6 +37,7 @@ runs:
       echo "CCACHE_COMPRESS=true" >> "$GITHUB_ENV"
       echo "CCACHE_COMPRESSLEVEL=12" >> "$GITHUB_ENV"
       echo "CCACHE_MAXSIZE=${{ inputs.ccache_size }}" >> "$GITHUB_ENV"
+      echo "CCACHE_IGNOREOPTIONS=-fprofile-abs-path" >> "$GITHUB_ENV"
 
   - name: Export other configs
     shell: bash
