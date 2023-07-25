@@ -42,7 +42,7 @@ runs:
   - name: Export other configs
     shell: bash
     run: |
-      echo "GNUMAKEFLAGS=--no-print-directory" >> "$GITHUB_ENV"
+      echo "GNUMAKEFLAGS=--no-print-directory --output-sync=target" >> "$GITHUB_ENV"
 
   - name: Load ccache
     if: inputs.use_actions_cache == 'true'
