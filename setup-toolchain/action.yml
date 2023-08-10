@@ -4,6 +4,10 @@ inputs:
   compiler:
     description: "Compiler to install, e.g., gcc-12 or clang-15."
     required: true
+  install_compiler:
+    description: "Install compiler. true or false."
+    required: false
+    default: true
   ccache_size:
     description: "The ccache maximum size."
     required: false
@@ -24,6 +28,7 @@ runs:
     run: install ccache
 
   - name: Install compiler ${{ inputs.compiler }}
+    if: inputs.install_compiler == 'true'
     shell: bash
     run: |
       install ${{ inputs.compiler }}
