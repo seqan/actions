@@ -1,64 +1,23 @@
 name: 'Setup CI tools'
-description: 'Installs dependencies for SeqAn CI'
+description: 'Installs a compiler, ccache, and actions/cache'
 inputs:
   compiler:
-    description: "Compiler to install, e.g., gcc-12 or clang-15."
+    description: "Compiler to install, e.g., gcc-13 or clang-17 or intel-2023.2.1"
     required: true
-  install_compiler:
-    description: "Install compiler. true or false."
-    required: false
-    default: true
   ccache_size:
     description: "The ccache maximum size."
     required: false
     default: 75M
-  use_actions_cache:
-    description: "Configure actions/cache for ccache. true or false."
-    required: false
-    default: true
 runs:
   using: 'composite'
   steps:
-  - name: Setup Package Manager
-    uses: seqan/actions/setup-package-manager@main
-
-  - name: Install ccache
-    if: inputs.use_actions_cache == 'true'
-    shell: bash
-    run: install ccache
-
-  - name: Install compiler ${{ inputs.compiler }}
-    if: inputs.install_compiler == 'true'
-    shell: bash
-    run: |
-      install ${{ inputs.compiler }}
-      echo "CC=${{ inputs.compiler }}" >> "$GITHUB_ENV"
-      echo "CXX=$(echo ${{ inputs.compiler }} | sed 's/gcc/g++/' | sed 's/clang/clang++/')" >> "$GITHUB_ENV"
-
-  - name: Export ccache config
-    if: inputs.use_actions_cache == 'true'
-    shell: bash
-    run: |
-      echo "CCACHE_BASEDIR=${{ github.workspace }}" >> "$GITHUB_ENV"
-      echo "CCACHE_DIR=${{ github.workspace }}/.ccache" >> "$GITHUB_ENV"
-      echo "CCACHE_COMPRESS=true" >> "$GITHUB_ENV"
-      echo "CCACHE_COMPRESSLEVEL=12" >> "$GITHUB_ENV"
-      echo "CCACHE_MAXSIZE=${{ inputs.ccache_size }}" >> "$GITHUB_ENV"
-      echo "CCACHE_IGNOREOPTIONS=-fprofile-abs-path" >> "$GITHUB_ENV"
-
-  - name: Export other configs
-    shell: bash
-    run: |
-      echo "GNUMAKEFLAGS=--no-print-directory --output-sync=target" >> "$GITHUB_ENV"
-
-  - name: Load ccache
-    if: inputs.use_actions_cache == 'true'
-    uses: actions/cache@v3
+  - name: Install compiler
+    uses: seqan/actions/setup-compiler@main
     with:
-      path: ${{ env.CCACHE_DIR }}
-      key: ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.name }}-${{ github.ref }}
-      # Restoring: From current branch, otherwise from base branch, otherwise from any branch.
-      restore-keys: |
-        ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.name }}-${{ github.ref }}
-        ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.name }}-${{ github.base_ref }}
-        ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.name }}
+      compiler: ${{ inputs.compiler }}
+
+  - name: Install ccache and setup actions/cache
+    uses: seqan/actions/setup-cache@main
+    with:
+      ccache_size: ${{ inputs.ccache_size }}
+

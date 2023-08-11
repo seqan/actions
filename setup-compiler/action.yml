@@ -1,0 +1,43 @@
+name: 'Setup Compiler'
+description: 'Installs a compiler'
+inputs:
+  compiler:
+    description: "Compiler to install, e.g., gcc-13 or clang-17 or intel-2023.2.1"
+    required: true
+runs:
+  using: 'composite'
+  steps:
+  - name: Setup Package Manager
+    uses: seqan/actions/setup-package-manager@main
+
+  - name: Install GCC
+    if: contains(inputs.compiler, 'gcc')
+    shell: bash
+    run: |
+      install ${{ inputs.compiler }}
+      echo "CC=${{ inputs.compiler }}" >> "$GITHUB_ENV"
+      echo "CXX=$(echo ${{ inputs.compiler }} | sed 's/gcc/g++/' | sed 's/clang/clang++/')" >> "$GITHUB_ENV"
+
+  - name: Install Clang
+    if: contains(inputs.compiler, 'clang')
+    shell: bash
+    run: |
+      install ${{ inputs.compiler }}
+      echo "CC=${{ inputs.compiler }}" >> "$GITHUB_ENV"
+      echo "CXX=$(echo ${{ inputs.compiler }} | sed 's/clang/clang++/')" >> "$GITHUB_ENV"
+
+  - name: Install Intel
+    if: contains(inputs.compiler, 'intel')
+    shell: bash
+    run: |
+      install $(echo ${{ inputs.compiler }} | sed 's/intel-/intel-oneapi-dpcpp-cpp-/')
+      set +xu; source /opt/intel/oneapi/setvars.sh; set -xu
+      echo "CC=icx" >> "${GITHUB_ENV}"
+      echo "CXX=icpx" >> "${GITHUB_ENV}"
+      echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> "${GITHUB_ENV}"
+      echo "${PATH}" > "${GITHUB_PATH}"
+
+  - name: Export configs
+    shell: bash
+    run: |
+      echo "GNUMAKEFLAGS=--no-print-directory --output-sync=target" >> "$GITHUB_ENV"

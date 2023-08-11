@@ -1,0 +1,37 @@
+name: 'Setup Cache'
+description: 'Installs ccache and actions/cache'
+inputs:
+  ccache_size:
+    description: "The ccache maximum size."
+    required: false
+    default: 75M
+runs:
+  using: 'composite'
+  steps:
+  - name: Setup Package Manager
+    uses: seqan/actions/setup-package-manager@main
+
+  - name: Install ccache
+    shell: bash
+    run: install ccache
+
+  - name: Export ccache config
+    shell: bash
+    run: |
+      echo "CCACHE_BASEDIR=${{ github.workspace }}" >> "$GITHUB_ENV"
+      echo "CCACHE_DIR=${{ github.workspace }}/.ccache" >> "$GITHUB_ENV"
+      echo "CCACHE_COMPRESS=true" >> "$GITHUB_ENV"
+      echo "CCACHE_COMPRESSLEVEL=12" >> "$GITHUB_ENV"
+      echo "CCACHE_MAXSIZE=${{ inputs.ccache_size }}" >> "$GITHUB_ENV"
+      echo "CCACHE_IGNOREOPTIONS=-fprofile-abs-path" >> "$GITHUB_ENV"
+
+  - name: Load ccache
+    uses: actions/cache@v3
+    with:
+      path: ${{ env.CCACHE_DIR }}
+      key: ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.name }}-${{ github.ref }}
+      # Restoring: From current branch, otherwise from base branch, otherwise from any branch.
+      restore-keys: |
+        ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.name }}-${{ github.ref }}
+        ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.name }}-${{ github.base_ref }}
+        ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.name }}
