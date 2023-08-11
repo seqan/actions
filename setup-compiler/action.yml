@@ -2,7 +2,7 @@ name: 'Setup Compiler'
 description: 'Installs a compiler'
 inputs:
   compiler:
-    description: "Compiler to install, e.g., gcc-13 or clang-17 or intel-2023.2.1"
+    description: "Compiler to install, e.g., gcc-13 or clang-17 or intel-2023.2.1 (intel for latest)"
     required: true
 runs:
   using: 'composite'
@@ -30,8 +30,8 @@ runs:
     if: contains(inputs.compiler, 'intel')
     shell: bash
     run: |
-      install $(echo ${{ inputs.compiler }} | sed 's/intel-/intel-oneapi-dpcpp-cpp-/')
-      set +xu; source /opt/intel/oneapi/setvars.sh; set -xu
+      install $(echo ${{ inputs.compiler }} | sed 's/intel/intel-oneapi-compiler-dpcpp-cpp/')
+      source /opt/intel/oneapi/setvars.sh
       echo "CC=icx" >> "${GITHUB_ENV}"
       echo "CXX=icpx" >> "${GITHUB_ENV}"
       echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> "${GITHUB_ENV}"
