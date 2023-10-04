@@ -41,7 +41,7 @@ install_via_brew()
 if [ "$RUNNER_OS" == "Linux" ]; then
     # gcc-13 -> g++-13
     for ARG in "$@"; do
-        sudo apt-get install -o APT::Get::AllowUnauthenticated=true --yes $(echo ${ARG/gcc/g++})
+        sudo apt-get install --yes $(echo ${ARG/gcc/g++})
     done
 elif [ "$RUNNER_OS" == "macOS" ]; then
     export HOMEBREW_NO_INSTALL_CLEANUP=1 # Do not run brew cleanup automatically.
