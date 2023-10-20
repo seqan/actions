@@ -8,9 +8,16 @@ runs:
     shell: bash
     run: ${{ github.action_path }}/configure_apt.sh
 
-  - name: Configure Homebrew
+  - name: Setup Homebrew
     if: runner.os == 'macOS' && env.SEQAN_ACTIONS_SETUP_PACKAGE_MANAGER_RAN != 'true'
     uses: Homebrew/actions/setup-homebrew@master
+
+  - name: Configure Homebrew
+    if: runner.os == 'macOS' && env.SEQAN_ACTIONS_SETUP_PACKAGE_MANAGER_RAN != 'true'
+    shell: bash
+    run: |
+      echo "HOMEBREW_NO_INSTALL_CLEANUP=1" >> "$GITHUB_ENV"
+      echo "HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1" >> "$GITHUB_ENV"
 
   - name: Export install script
     if: env.SEQAN_ACTIONS_SETUP_PACKAGE_MANAGER_RAN != 'true'
