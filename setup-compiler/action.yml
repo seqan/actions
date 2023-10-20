@@ -34,6 +34,7 @@ runs:
       source /opt/intel/oneapi/setvars.sh
       echo "CC=icx" >> "${GITHUB_ENV}"
       echo "CXX=icpx" >> "${GITHUB_ENV}"
+      echo "LIBRARY_PATH=${LIBRARY_PATH}" >> "${GITHUB_ENV}"
       echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> "${GITHUB_ENV}"
       echo "${PATH}" > "${GITHUB_PATH}"
 
