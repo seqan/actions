@@ -15,13 +15,13 @@ install_via_brew()
 
     # If the package is installed, we upgrade. Otherwise, we install it.
     if brew list --versions $brew_package_name; then
+        brew upgrade --force-bottle $brew_package_name
+    else
         # Unlink the package. brew unlink does not take a version.
         brew unlink $package_name || true
         # Install dependencies separately and ignore errors. E. g., python3.11 (dependency of llvm@17) fails to link.
         brew install --force-bottle --overwrite --only-dependencies $brew_package_name || true
         brew install --force-bottle --overwrite $brew_package_name
-    else
-        brew upgrade --force-bottle $brew_package_name
     fi
 
     # We link the package, i.e. we add symlinks into /usr/local/bin. They requested version of the package should superseed
