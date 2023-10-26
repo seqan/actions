@@ -25,6 +25,16 @@ runs:
       install ${{ inputs.compiler }}
       echo "CC=${{ inputs.compiler }}" >> "$GITHUB_ENV"
       echo "CXX=$(echo ${{ inputs.compiler }} | sed 's/clang/clang++/')" >> "$GITHUB_ENV"
+      if [ "${RUNNER_OS}" == "Linux" ]; then
+        CLANG=${{ inputs.compiler }}
+        CLANG_VERSION=${CLANG:6}
+        install lld-${CLANG_VERSION}
+        sudo ln -fs /usr/bin/llvm-as-${CLANG_VERSION} /usr/bin/as
+        sudo ln -fs /usr/bin/llvm-ar-${CLANG_VERSION} /usr/bin/ar
+        sudo ln -fs /usr/bin/ld.lld-${CLANG_VERSION} /usr/bin/ld
+        sudo ln -fs /usr/bin/llvm-nm-${CLANG_VERSION} /usr/bin/nm
+        sudo ln -fs /usr/bin/llvm-ranlib-${CLANG_VERSION} /usr/bin/ranlib
+      fi
 
   - name: Install Intel
     if: contains(inputs.compiler, 'intel')
