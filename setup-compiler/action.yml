@@ -29,10 +29,11 @@ runs:
         CLANG=${{ inputs.compiler }}
         CLANG_VERSION=${CLANG:6}
         install lld-${CLANG_VERSION}
-        echo "AS=llvm-as-17" >> "$GITHUB_ENV"
-        echo "AR=llvm-ar-17" >> "$GITHUB_ENV"
-        echo "LD=ld.lld-17" >> "$GITHUB_ENV"
-        echo "NM=llvm-nm-17" >> "$GITHUB_ENV"
+        echo "AS=llvm-as-${CLANG_VERSION}" >> "$GITHUB_ENV"
+        echo "AR=llvm-ar-${CLANG_VERSION}" >> "$GITHUB_ENV"
+        echo "LD=ld.lld-${CLANG_VERSION}" >> "$GITHUB_ENV"
+        echo "NM=llvm-nm-${CLANG_VERSION}" >> "$GITHUB_ENV"
+        ln -fs /usr/bin/ld.lld-${CLANG_VERSION} /usr/bin/ld
       fi
 
   - name: Install Intel
