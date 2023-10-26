@@ -25,6 +25,15 @@ runs:
       install ${{ inputs.compiler }}
       echo "CC=${{ inputs.compiler }}" >> "$GITHUB_ENV"
       echo "CXX=$(echo ${{ inputs.compiler }} | sed 's/clang/clang++/')" >> "$GITHUB_ENV"
+      if [ "${RUNNER_OS}" == "Linux" ]; then
+        CLANG=${{ inputs.compiler }}
+        CLANG_VERSION=${CLANG:6}
+        install lld-${CLANG_VERSION}
+        echo "AS=llvm-as-17" >> "$GITHUB_ENV"
+        echo "AR=llvm-ar-17" >> "$GITHUB_ENV"
+        echo "LD=ld.lld-17" >> "$GITHUB_ENV"
+        echo "NM=llvm-nm-17" >> "$GITHUB_ENV"
+      fi
 
   - name: Install Intel
     if: contains(inputs.compiler, 'intel')
