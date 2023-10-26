@@ -33,7 +33,7 @@ runs:
         echo "AR=llvm-ar-${CLANG_VERSION}" >> "$GITHUB_ENV"
         echo "LD=ld.lld-${CLANG_VERSION}" >> "$GITHUB_ENV"
         echo "NM=llvm-nm-${CLANG_VERSION}" >> "$GITHUB_ENV"
-        ln -fs /usr/bin/ld.lld-${CLANG_VERSION} /usr/bin/ld
+        sudo ln -fs /usr/bin/ld.lld-${CLANG_VERSION} /usr/bin/ld
       fi
 
   - name: Install Intel
