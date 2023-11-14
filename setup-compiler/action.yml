@@ -35,6 +35,14 @@ runs:
         sudo ln -fs /usr/bin/llvm-nm-${CLANG_VERSION} /usr/bin/nm
         sudo ln -fs /usr/bin/llvm-ranlib-${CLANG_VERSION} /usr/bin/ranlib
       fi
+      if [ "${RUNNER_OS}" == "macOS" ]; then
+        CLANG=${{ inputs.compiler }}
+        CLANG_VERSION=${CLANG:6}
+        INSTALL_PREFIX=$(brew --prefix llvm@${CLANG_VERSION})
+        echo "LDFLAGS=-L${INSTALL_PREFIX}/lib/c++ -Wl,-rpath,${INSTALL_PREFIX}/lib/c++" >> "$GITHUB_ENV"
+        ln -s ${INSTALL_PREFIX}/bin/clang++ ${INSTALL_PREFIX}/bin/clang++-${CLANG_VERSION} || true
+        echo "${INSTALL_PREFIX}" >> "${GITHUB_PATH}"
+      fi
 
   - name: Install Intel
     if: contains(inputs.compiler, 'intel')

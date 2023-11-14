@@ -26,14 +26,6 @@ install_via_brew()
     # other installed versions (`--overwrite`). For example, when requesting gcc@10 while gcc@11 is already installed and
     # linked, we want to overwrite those links and use gcc@10 instead.
     brew link --overwrite $brew_package_name
-
-    # brew's llvm packages do not create symlinks as they might interfere with Apple's clang installation.
-    # Hence, we need to do it explicitly.
-    if [ "$package_name" == "llvm" ]; then
-        install_prefix=$(brew --prefix $brew_package_name)/bin
-        ln -s $install_prefix/clang++ $install_prefix/clang++-$package_version || true
-        echo "$install_prefix" >> $GITHUB_PATH
-    fi
 }
 
 if [ "$RUNNER_OS" == "Linux" ]; then
