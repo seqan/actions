@@ -40,8 +40,6 @@ runs:
         CLANG_VERSION=${CLANG:6}
         INSTALL_PREFIX=$(brew --prefix llvm@${CLANG_VERSION})
         echo "LDFLAGS=-L${INSTALL_PREFIX}/lib/c++ -Wl,-rpath,${INSTALL_PREFIX}/lib/c++" >> "$GITHUB_ENV"
-        sudo ln -fs ${INSTALL_PREFIX}/bin/clang++ ${INSTALL_PREFIX}/bin/clang++-${CLANG_VERSION}
-        sudo ln -fs ${INSTALL_PREFIX}/bin/clang ${INSTALL_PREFIX}/bin/clang-${CLANG_VERSION}
         echo "${INSTALL_PREFIX}/bin" >> "${GITHUB_PATH}"
       fi
 
