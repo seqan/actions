@@ -50,11 +50,34 @@ runs:
     run: |
       install $(echo ${{ inputs.compiler }} | sed 's/intel/intel-oneapi-compiler-dpcpp-cpp/')
       source /opt/intel/oneapi/setvars.sh
+      sudo ln -fs $(icpx --print-prog-name=llvm-ar) /usr/bin/ar
+      sudo ln -fs $(icpx --print-prog-name=lld) /usr/bin/ld
+      sudo ln -fs $(icpx --print-prog-name=llvm-nm) /usr/bin/nm
+      sudo ln -fs $(icpx --print-prog-name=llvm-ranlib) /usr/bin/ranlib
       echo "CC=icx" >> "${GITHUB_ENV}"
       echo "CXX=icpx" >> "${GITHUB_ENV}"
-      echo "LIBRARY_PATH=${LIBRARY_PATH}" >> "${GITHUB_ENV}"
-      echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> "${GITHUB_ENV}"
       echo "${PATH}" > "${GITHUB_PATH}"
+      echo "TBBROOT=${TBBROOT}" >> "${GITHUB_ENV}"
+      echo "ONEAPI_ROOT=${ONEAPI_ROOT}" >> "${GITHUB_ENV}"
+      echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}" >> "${GITHUB_ENV}"
+      echo "ACL_BOARD_VENDOR_PATH=${ACL_BOARD_VENDOR_PATH}" >> "${GITHUB_ENV}"
+      echo "FPGA_VARS_DIR=${FPGA_VARS_DIR}" >> "${GITHUB_ENV}"
+      echo "DIAGUTIL_PATH=${DIAGUTIL_PATH}" >> "${GITHUB_ENV}"
+      echo "DPL_ROOT=${DPL_ROOT}" >> "${GITHUB_ENV}"
+      echo "MANPATH=${MANPATH}" >> "${GITHUB_ENV}"
+      echo "GDB_INFO=${GDB_INFO}" >> "${GITHUB_ENV}"
+      echo "SETVARS_COMPLETED=${SETVARS_COMPLETED}" >> "${GITHUB_ENV}"
+      echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}" >> "${GITHUB_ENV}"
+      echo "CMPLR_ROOT=${CMPLR_ROOT}" >> "${GITHUB_ENV}"
+      echo "FPGA_VARS_ARGS=${FPGA_VARS_ARGS}" >> "${GITHUB_ENV}"
+      echo "INFOPATH=${INFOPATH}" >> "${GITHUB_ENV}"
+      echo "LIBRARY_PATH=${LIBRARY_PATH}" >> "${GITHUB_ENV}"
+      echo "OCL_ICD_FILENAMES=${OCL_ICD_FILENAMES}" >> "${GITHUB_ENV}"
+      echo "INTELFPGAOCLSDKROOT=${INTELFPGAOCLSDKROOT}" >> "${GITHUB_ENV}"
+      echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> "${GITHUB_ENV}"
+      echo "NLSPATH=${NLSPATH}" >> "${GITHUB_ENV}"
+      echo "INTEL_PYTHONHOME=${INTEL_PYTHONHOME}" >> "${GITHUB_ENV}"
+      echo "CPATH=${CPATH}" >> "${GITHUB_ENV}"
 
   - name: Export configs
     shell: bash
