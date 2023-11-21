@@ -29,6 +29,7 @@ runs:
         CLANG=${{ inputs.compiler }}
         CLANG_VERSION=${CLANG:6}
         install lld-${CLANG_VERSION} libc++-${CLANG_VERSION}-dev libc++abi-${CLANG_VERSION}-dev libomp-${CLANG_VERSION}-dev
+        echo "OMP_TOOL_LIBRARIES=/usr/lib/llvm-${CLANG_VERSION}/lib/libarcher.so" >> "$GITHUB_ENV"
         sudo ln -fs /usr/bin/llvm-as-${CLANG_VERSION} /usr/bin/as
         sudo ln -fs /usr/bin/llvm-ar-${CLANG_VERSION} /usr/bin/ar
         sudo ln -fs /usr/bin/ld.lld-${CLANG_VERSION} /usr/bin/ld
@@ -41,6 +42,10 @@ runs:
         INSTALL_PREFIX=$(brew --prefix llvm@${CLANG_VERSION})
         echo "LDFLAGS=-L${INSTALL_PREFIX}/lib/c++ -Wl,-rpath,${INSTALL_PREFIX}/lib/c++" >> "$GITHUB_ENV"
         sudo ln -fs ${INSTALL_PREFIX}/bin/clang++ ${INSTALL_PREFIX}/bin/clang++-${CLANG_VERSION}
+        sudo ln -fs ${INSTALL_PREFIX}/bin/llvm-ar ${INSTALL_PREFIX}/bin/ar
+        sudo ln -fs ${INSTALL_PREFIX}/bin/llvm-as ${INSTALL_PREFIX}/bin/as
+        sudo ln -fs ${INSTALL_PREFIX}/bin/llvm-nm ${INSTALL_PREFIX}/bin/nm
+        sudo ln -fs ${INSTALL_PREFIX}/bin/llvm-ranlib ${INSTALL_PREFIX}/bin/ranlib
         echo "${INSTALL_PREFIX}/bin" >> "${GITHUB_PATH}"
       fi
 
