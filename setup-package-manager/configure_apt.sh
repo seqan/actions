@@ -10,10 +10,13 @@ echo 'quiet "1";' | sudo tee /etc/apt/apt.conf.d/80-quiet
 
 retry_command ()
 {
-    for i in 1 2 3 4; do
-        "$@" && break || sleep $((i * 5))
+    for i in 1 2 3 4 5; do
+        if [[ $i -eq 5 ]]; then
+            "$@"
+        else
+            "$@" && break || sleep $((i * 5))
+        fi
     done
-    "$@"
 }
 
 # Replace Microsofts repository with some other mirror, because azure is sometimes down.
