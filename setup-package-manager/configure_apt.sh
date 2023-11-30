@@ -15,7 +15,7 @@ retry_command ()
 }
 
 # Replace Microsofts repository with some other mirror, because azure is sometimes down.
-retry_command sudo sed -i 's@azure.archive.ubuntu.com@mirror.enzu.com@' /etc/apt/apt-mirrors.txt
+retry_command sudo sed -i 's@azure.archive.ubuntu.com@mirror.enzu.com@' /etc/apt/trusted.gpg.d/apt.llvm.org.asc
 
 # GCC
 retry_command sudo add-apt-repository --no-update --yes --ppa ppa:ubuntu-toolchain-r/ppa
