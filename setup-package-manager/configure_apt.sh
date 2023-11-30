@@ -5,6 +5,8 @@ set -Eeuo pipefail
 source /etc/os-release
 
 echo 'Acquire::Retries "10";' | sudo tee /etc/apt/apt.conf.d/80-retries
+echo 'APT::Get::Assume-Yes "true";' | sudo tee /etc/apt/apt.conf.d/80-assume-yes
+echo 'quiet "1";' | sudo tee /etc/apt/apt.conf.d/80-quiet
 
 retry_command ()
 {
@@ -32,4 +34,4 @@ retry_command sudo add-apt-repository --no-update --yes "deb http://apt.llvm.org
 retry_command wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | sudo tee /etc/apt/trusted.gpg.d/apt.repos.intel.com.asc
 retry_command sudo add-apt-repository --no-update --yes "deb https://apt.repos.intel.com/oneapi all main"
 
-retry_command sudo apt-get update
+retry_command sudo apt-get update --yes
