@@ -15,14 +15,14 @@ retry_command ()
 }
 
 # Replace Microsofts repository with some other mirror, because azure is sometimes down.
-retry_command sudo sed -i 's@azure.archive.ubuntu.com@mirror.enzu.com@' /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+retry_command sudo sed -i 's@azure.archive.ubuntu.com@mirror.enzu.com@' /etc/apt/apt-mirrors.txt
 
 # GCC
 retry_command sudo add-apt-repository --no-update --yes --ppa ppa:ubuntu-toolchain-r/ppa
 retry_command sudo add-apt-repository --no-update --yes --ppa ppa:ubuntu-toolchain-r/test
 
 # Clang
-retry_command wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /dev/shm/test.asc
+retry_command wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
 retry_command sudo add-apt-repository --no-update --yes --sourceslist "deb http://apt.llvm.org/${VERSION_CODENAME}/ llvm-toolchain-${VERSION_CODENAME}-15 main"
 retry_command sudo add-apt-repository --no-update --yes --sourceslist "deb http://apt.llvm.org/${VERSION_CODENAME}/ llvm-toolchain-${VERSION_CODENAME}-16 main"
 retry_command sudo add-apt-repository --no-update --yes --sourceslist "deb http://apt.llvm.org/${VERSION_CODENAME}/ llvm-toolchain-${VERSION_CODENAME}-17 main"
