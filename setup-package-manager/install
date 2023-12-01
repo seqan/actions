@@ -30,9 +30,7 @@ install_via_brew()
 
 if [ "$RUNNER_OS" == "Linux" ]; then
     # gcc-13 -> g++-13
-    for ARG in "$@"; do
-        sudo apt-get install --yes $(echo ${ARG/gcc/g++})
-    done
+    sudo apt-get install --yes "${@//gcc/g++}"
 elif [ "$RUNNER_OS" == "macOS" ]; then
     for ARG in "$@"; do
         # clang-15 -> llvm@15, gcc-13 -> gcc@13
