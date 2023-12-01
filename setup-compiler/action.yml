@@ -35,6 +35,9 @@ runs:
         sudo ln -fs /usr/bin/ld.lld-${CLANG_VERSION} /usr/bin/ld
         sudo ln -fs /usr/bin/llvm-nm-${CLANG_VERSION} /usr/bin/nm
         sudo ln -fs /usr/bin/llvm-ranlib-${CLANG_VERSION} /usr/bin/ranlib
+        if [[ ! -e "/usr/lib/llvm-${CLANG_VERSION}/lib/libclang-${CLANG_VERSION}.so.1" ]]; then
+          sudo ln -fs /usr/lib/llvm-${CLANG_VERSION}/lib/libclang-${CLANG_VERSION}.so.1 /usr/lib/llvm-${CLANG_VERSION}/lib/libclang-${CLANG_VERSION}.so.${CLANG_VERSION}
+        fi
       fi
       if [ "${RUNNER_OS}" == "macOS" ]; then
         CLANG=${{ inputs.compiler }}
