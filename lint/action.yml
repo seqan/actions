@@ -58,7 +58,7 @@ runs:
       uses: DoozyX/clang-format-lint-action@v0.16
       with:
         source: ${{ steps.changed_files.outputs.cpp_list }}
-        clangFormatVersion: 15
+        clangFormatVersion: ${{ inputs.clang_format }}
         inplace: True
 
     - name: Run cmake-format
