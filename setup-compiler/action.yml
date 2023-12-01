@@ -28,7 +28,7 @@ runs:
       if [ "${RUNNER_OS}" == "Linux" ]; then
         CLANG=${{ inputs.compiler }}
         CLANG_VERSION=${CLANG:6}
-        install lld-${CLANG_VERSION} libc++-${CLANG_VERSION}-dev libc++abi-${CLANG_VERSION}-dev libomp-${CLANG_VERSION}-dev
+        install lld-${CLANG_VERSION} libc++-${CLANG_VERSION}-dev libc++abi-${CLANG_VERSION}-dev libomp-${CLANG_VERSION}-dev libclang-${CLANG_VERSION}-dev
         echo "OMP_TOOL_LIBRARIES=/usr/lib/llvm-${CLANG_VERSION}/lib/libarcher.so" >> "$GITHUB_ENV"
         sudo ln -fs /usr/bin/llvm-as-${CLANG_VERSION} /usr/bin/as
         sudo ln -fs /usr/bin/llvm-ar-${CLANG_VERSION} /usr/bin/ar
