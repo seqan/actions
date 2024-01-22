@@ -26,7 +26,7 @@ runs:
       echo "CCACHE_IGNOREOPTIONS=-fprofile-abs-path" >> "$GITHUB_ENV"
 
   - name: Load ccache
-    uses: actions/cache@v3
+    uses: actions/cache@v4
     with:
       path: ${{ env.CCACHE_DIR }}
       key: ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.name }}-${{ github.ref }}
