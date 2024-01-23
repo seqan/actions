@@ -26,9 +26,10 @@ runs:
       echo "CCACHE_IGNOREOPTIONS=-fprofile-abs-path" >> "$GITHUB_ENV"
 
   - name: Load ccache
-    uses: actions/cache@v3
+    uses: actions/cache@v4
     with:
       path: ${{ env.CCACHE_DIR }}
+      save-always: true
       key: ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.name }}-${{ github.ref }}
       # Restoring: From current branch, otherwise from base branch, otherwise from any branch.
       restore-keys: |
