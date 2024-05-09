@@ -1,0 +1,14 @@
+services:
+  clang-17:
+    image: ghcr.io/eseiler/clang-17
+    build:
+      dockerfile: Dockerfile
+      args:
+        CLANG_VERSION: 17
+
+  clang-18:
+    image: ghcr.io/eseiler/clang-18
+    build:
+      dockerfile: Dockerfile
+      args:
+        CLANG_VERSION: 18
