@@ -17,6 +17,7 @@ runs:
       install ${{ inputs.compiler }}
       echo "CC=${{ inputs.compiler }}" >> "$GITHUB_ENV"
       echo "CXX=$(echo ${{ inputs.compiler }} | sed 's/gcc/g++/' | sed 's/clang/clang++/')" >> "$GITHUB_ENV"
+      echo "SDKROOT=$(${{ inputs.compiler }} -v 2>&1 | sed -n 's@.*--with-sysroot=\([^ ]*\).*@\1@p')" >> "$GITHUB_ENV"
 
   - name: Install Clang
     if: contains(inputs.compiler, 'clang')
