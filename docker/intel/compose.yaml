@@ -4,6 +4,6 @@
 
 services:
   intel:
-    image: ghcr.io/eseiler/intel
+    image: ghcr.io/seqan/intel
     build:
       dockerfile: Dockerfile
