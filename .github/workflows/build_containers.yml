@@ -29,6 +29,7 @@ jobs:
       packages: write
       contents: read
     strategy:
+      fail-fast: false
       matrix:
         compiler: [gcc, clang, intel]
     if: github.repository_owner == 'seqan' || github.event_name == 'workflow_dispatch'

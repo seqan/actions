@@ -4,28 +4,28 @@
 
 services:
   gcc-11:
-    image: ghcr.io/eseiler/gcc-11
+    image: ghcr.io/seqan/gcc-11
     build:
       dockerfile: Dockerfile
       args:
         GCC_VERSION: 11
 
   gcc-12:
-    image: ghcr.io/eseiler/gcc-12
+    image: ghcr.io/seqan/gcc-12
     build:
       dockerfile: Dockerfile
       args:
         GCC_VERSION: 12
 
   gcc-13:
-    image: ghcr.io/eseiler/gcc-13
+    image: ghcr.io/seqan/gcc-13
     build:
       dockerfile: Dockerfile
       args:
         GCC_VERSION: 13
 
   gcc-14:
-    image: ghcr.io/eseiler/gcc-14
+    image: ghcr.io/seqan/gcc-14
     build:
       dockerfile: Dockerfile
       args:
