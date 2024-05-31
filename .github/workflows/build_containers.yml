@@ -1,0 +1,49 @@
+# SPDX-FileCopyrightText: 2006-2024 Knut Reinert & Freie Universität Berlin
+# SPDX-FileCopyrightText: 2016-2024 Knut Reinert & MPI für molekulare Genetik
+# SPDX-License-Identifier: CC-BY-4.0
+
+name: Build Containers
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: build
+  cancel-in-progress: false
+
+env:
+  TZ: Europe/Berlin
+
+defaults:
+  run:
+    shell: bash -Eexuo pipefail {0}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    strategy:
+      matrix:
+        compiler: [gcc, clang, intel]
+    if: github.repository_owner == 'seqan' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        working-directory: ./docker/${{ matrix.compiler }}
+        run: docker compose build
+
+      - name: Log in to registry
+        if: github.repository_owner == 'seqan' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push image
+        if: github.repository_owner == 'seqan' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        working-directory: ./docker/${{ matrix.compiler }}
+        run: docker compose push
