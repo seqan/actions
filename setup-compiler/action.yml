@@ -55,6 +55,9 @@ runs:
         sudo ln -fs ${INSTALL_PREFIX}/bin/llvm-nm ${INSTALL_PREFIX}/bin/nm
         sudo ln -fs ${INSTALL_PREFIX}/bin/llvm-ranlib ${INSTALL_PREFIX}/bin/ranlib
         echo "${INSTALL_PREFIX}/bin" >> "${GITHUB_PATH}"
+        install libomp
+        LIBOMP_PREFIX=$(brew --prefix libomp)
+        echo "OpenMP_ROOT=${LIBOMP_PREFIX}" >> "$GITHUB_ENV"
       fi
 
   - name: Install Intel
