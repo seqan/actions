@@ -59,7 +59,7 @@ runs:
 
     - name: Run clang-format
       if: ${{ steps.changed_files.outputs.cpp_list }}
-      uses: DoozyX/clang-format-lint-action@v0.17
+      uses: eseiler/clang-format-lint-action@master
       with:
         source: ${{ steps.changed_files.outputs.cpp_list }}
         clangFormatVersion: ${{ inputs.clang_format }}
