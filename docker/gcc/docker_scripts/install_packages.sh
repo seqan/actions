@@ -8,6 +8,7 @@ set -Eeuxo pipefail
 
 GCC_VERSION=$1
 
+apt-get update
 apt-get install --yes --no-install-recommends g++-${GCC_VERSION}
 
 rm -rf /var/lib/apt/lists/*
