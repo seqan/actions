@@ -6,6 +6,8 @@ services:
   gcc-11:
     image: ghcr.io/seqan/gcc-11
     build:
+      additional_contexts:
+        common: ../common
       dockerfile: Dockerfile
       args:
         GCC_VERSION: 11
@@ -13,6 +15,8 @@ services:
   gcc-12:
     image: ghcr.io/seqan/gcc-12
     build:
+      additional_contexts:
+        common: ../common
       dockerfile: Dockerfile
       args:
         GCC_VERSION: 12
@@ -20,6 +24,8 @@ services:
   gcc-13:
     image: ghcr.io/seqan/gcc-13
     build:
+      additional_contexts:
+        common: ../common
       dockerfile: Dockerfile
       args:
         GCC_VERSION: 13
@@ -27,6 +33,8 @@ services:
   gcc-14:
     image: ghcr.io/seqan/gcc-14
     build:
+      additional_contexts:
+        common: ../common
       dockerfile: Dockerfile
       args:
         GCC_VERSION: 14

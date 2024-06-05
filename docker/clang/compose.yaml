@@ -6,6 +6,8 @@ services:
   clang-17:
     image: ghcr.io/seqan/clang-17
     build:
+      additional_contexts:
+        common: ../common
       dockerfile: Dockerfile
       args:
         CLANG_VERSION: 17
@@ -13,6 +15,8 @@ services:
   clang-18:
     image: ghcr.io/seqan/clang-18
     build:
+      additional_contexts:
+        common: ../common
       dockerfile: Dockerfile
       args:
         CLANG_VERSION: 18
