@@ -16,6 +16,7 @@ apt-get install --yes --no-install-recommends --no-upgrade \
     gh \
     git \
     gpg \
+    gpg-agent \
     libbz2-dev \
     make \
     patch \
