@@ -15,6 +15,7 @@ apt-get install --yes --no-install-recommends --no-upgrade \
     gcovr \
     gh \
     git \
+    gpg \
     libbz2-dev \
     make \
     patch \
