@@ -8,18 +8,6 @@ set -Eeuxo pipefail
 
 INTEL_VERSION=$1
 
-apt-get update
-apt-get install --yes --no-install-recommends --no-upgrade \
-    ca-certificates \
-    ccache \
-    cmake \
-    gh \
-    git \
-    libbz2-dev \
-    make \
-    wget \
-    zlib1g-dev \
-
 wget -q -O /etc/apt/trusted.gpg.d/apt.repos.intel.com.asc https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
 echo "deb https://apt.repos.intel.com/oneapi all main" > /etc/apt/sources.list.d/oneAPI.list
 

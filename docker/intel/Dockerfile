@@ -11,8 +11,10 @@ ARG INTEL_VERSION=2024.1
 SHELL ["/bin/bash", "-Eeuxo", "pipefail", "-c"]
 
 COPY docker_scripts /docker_scripts
+COPY ../install_common_packages.sh /docker_scripts/
 
-RUN /docker_scripts/install_packages.sh ${INTEL_VERSION} && \
+RUN /docker_scripts/install_common_packages.sh && \
+    /docker_scripts/install_packages.sh ${INTEL_VERSION} && \
     /docker_scripts/install_symlinks.sh ${INTEL_VERSION}
 
 ENV CC=icx

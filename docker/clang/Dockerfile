@@ -11,8 +11,10 @@ ARG CLANG_VERSION
 SHELL ["/bin/bash", "-Eeuxo", "pipefail", "-c"]
 
 COPY docker_scripts /docker_scripts
+COPY ../install_common_packages.sh /docker_scripts/
 
-RUN /docker_scripts/install_packages.sh ${CLANG_VERSION} && \
+RUN /docker_scripts/install_common_packages.sh && \
+    /docker_scripts/install_packages.sh ${CLANG_VERSION} && \
     /docker_scripts/install_wrapper.sh ${CLANG_VERSION} && \
     /docker_scripts/install_symlinks.sh ${CLANG_VERSION}
 

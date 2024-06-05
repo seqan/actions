@@ -36,6 +36,7 @@ retry_command wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /e
 retry_command sudo add-apt-repository --no-update --yes "deb http://apt.llvm.org/${VERSION_CODENAME}/ llvm-toolchain-${VERSION_CODENAME}-15 main"
 retry_command sudo add-apt-repository --no-update --yes "deb http://apt.llvm.org/${VERSION_CODENAME}/ llvm-toolchain-${VERSION_CODENAME}-16 main"
 retry_command sudo add-apt-repository --no-update --yes "deb http://apt.llvm.org/${VERSION_CODENAME}/ llvm-toolchain-${VERSION_CODENAME}-17 main"
+retry_command sudo add-apt-repository --no-update --yes "deb http://apt.llvm.org/${VERSION_CODENAME}/ llvm-toolchain-${VERSION_CODENAME}-18 main"
 retry_command sudo add-apt-repository --no-update --yes "deb http://apt.llvm.org/${VERSION_CODENAME}/ llvm-toolchain-${VERSION_CODENAME} main"
 
 # Intel

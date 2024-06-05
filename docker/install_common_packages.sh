@@ -6,8 +6,19 @@
 
 set -Eeuxo pipefail
 
-GCC_VERSION=$1
-
-apt-get install --yes --no-install-recommends g++-${GCC_VERSION}
+apt-get update
+apt-get install --yes --no-install-recommends --no-upgrade \
+    ca-certificates \
+    ccache \
+    cmake \
+    curl \
+    gcovr \
+    gh \
+    git \
+    libbz2-dev \
+    make \
+    patch \
+    wget \
+    zlib1g-dev
 
 rm -rf /var/lib/apt/lists/*

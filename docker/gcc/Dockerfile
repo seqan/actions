@@ -11,8 +11,10 @@ ARG GCC_VERSION
 SHELL ["/bin/bash", "-Eeuxo", "pipefail", "-c"]
 
 COPY docker_scripts /docker_scripts
+COPY ../install_common_packages.sh /docker_scripts/
 
-RUN /docker_scripts/install_packages.sh ${GCC_VERSION} && \
+RUN /docker_scripts/install_common_packages.sh && \
+    /docker_scripts/install_packages.sh ${GCC_VERSION} && \
     /docker_scripts/install_symlinks.sh ${GCC_VERSION}
 
 ENV CC=gcc-${GCC_VERSION}
