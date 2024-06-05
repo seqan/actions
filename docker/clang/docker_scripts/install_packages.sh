@@ -13,14 +13,16 @@ echo "deb http://apt.llvm.org/unstable/ llvm-toolchain-${CLANG_VERSION} main" > 
 
 apt-get update
 apt-get install --yes --no-install-recommends \
-    llvm-${CLANG_VERSION} \
     clang-${CLANG_VERSION} \
-    lld-${CLANG_VERSION} \
+    clang-format-${CLANG_VERSION} \
+    clang-tidy-${CLANG_VERSION} \
     libc++-${CLANG_VERSION}-dev \
     libc++abi-${CLANG_VERSION}-dev \
-    libomp-${CLANG_VERSION}-dev \
     libclang-${CLANG_VERSION}-dev \
-    clang-format-${CLANG_VERSION} \
-    clang-tidy-${CLANG_VERSION}
+    libclang-rt-${CLANG_VERSION}-dev \
+    libomp-${CLANG_VERSION}-dev \
+    lld-${CLANG_VERSION} \
+    llvm-${CLANG_VERSION} \
+    llvm-${CLANG_VERSION}-dev
 
 rm -rf /var/lib/apt/lists/*
