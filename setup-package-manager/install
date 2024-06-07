@@ -19,12 +19,13 @@ install_via_brew()
     # `--force-bottle` will cause brew to use precompiled binaries. Sometimes brew likes to build compilers from scratch.
 
     # If the package is installed, we upgrade. Otherwise, we install it.
-    if brew list --versions $brew_package_name; then
+    # If output empty.
+    if [[ -z $(brew list --versions $brew_package_name) ]]; then
+        brew install --force-bottle $brew_package_name || true
+    else
         # Unlink the package. brew unlink does not take a version.
         brew unlink $package_name || true
         brew upgrade --force-bottle $brew_package_name
-    else
-        brew install --force-bottle $brew_package_name || true
     fi
 
     # We link the package, i.e. we add symlinks into /usr/local/bin. They requested version of the package should superseed
