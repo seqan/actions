@@ -48,3 +48,4 @@ ENV CCACHE_DIR=/home/runner/.ccache
 ENV CCACHE_COMPRESS=true
 ENV CCACHE_COMPRESSLEVEL=12
 ENV CCACHE_MAXSIZE=75M
+ENV GNUMAKEFLAGS="-j4 --no-print-directory --output-sync=target"
