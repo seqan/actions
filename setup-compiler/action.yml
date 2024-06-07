@@ -98,4 +98,4 @@ runs:
   - name: Export configs
     shell: bash
     run: |
-      echo "GNUMAKEFLAGS=-j$(nproc) --no-print-directory --output-sync=target" >> "$GITHUB_ENV"
+      echo "GNUMAKEFLAGS=-j$(getconf _NPROCESSORS_ONLN) --no-print-directory --output-sync=target" >> "$GITHUB_ENV"
