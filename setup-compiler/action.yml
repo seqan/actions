@@ -64,7 +64,7 @@ runs:
     if: contains(inputs.compiler, 'intel')
     shell: bash
     run: |
-      install $(echo ${{ inputs.compiler }} | sed 's/intel/intel-oneapi-compiler-dpcpp-cpp/')
+      install $(echo ${{ inputs.compiler }} | sed 's/intel/intel-oneapi-compiler-dpcpp-cpp/') libstdc++-13-dev
       source /opt/intel/oneapi/setvars.sh
       sudo ln -fs $(icpx --print-prog-name=llvm-ar) /usr/bin/ar
       sudo ln -fs $(icpx --print-prog-name=lld) /usr/bin/ld
