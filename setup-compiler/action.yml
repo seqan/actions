@@ -99,3 +99,4 @@ runs:
     shell: bash
     run: |
       echo "GNUMAKEFLAGS=-j$(getconf _NPROCESSORS_ONLN) --no-print-directory --output-sync=target" >> "$GITHUB_ENV"
+      echo "MAKEFLAGS=-j$(getconf _NPROCESSORS_ONLN) --no-print-directory --output-sync=target" >> "$GITHUB_ENV"
