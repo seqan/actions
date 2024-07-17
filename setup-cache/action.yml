@@ -34,7 +34,7 @@ runs:
     with:
       path: ${{ env.CCACHE_DIR }}
       save-always: true
-      key: ccache-${{ runner.os }}-${{ github.workflow }}-${{ github.jobs[github.job].name }}-${{ github.ref }}-${{ github.run_id }}
+      key: ccache-${{ runner.os }}-${{ github.workflow }}-${{ join(matrix.*, ' - ') }}-${{ github.ref }}-${{ github.run_id }}
       restore-keys: |
-        ccache-${{ runner.os }}-${{ github.workflow }}-${{ github.jobs[github.job].name }}-${{ github.ref }}
-        ccache-${{ runner.os }}-${{ github.workflow }}-${{ github.jobs[github.job].name }}
+        ccache-${{ runner.os }}-${{ github.workflow }}-${{ join(matrix.*, ' - ') }}-${{ github.ref }}
+        ccache-${{ runner.os }}-${{ github.workflow }}-${{ join(matrix.*, ' - ') }}
