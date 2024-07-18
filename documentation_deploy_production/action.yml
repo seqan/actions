@@ -1,0 +1,80 @@
+# SPDX-FileCopyrightText: 2006-2024 Knut Reinert & Freie Universität Berlin
+# SPDX-FileCopyrightText: 2016-2024 Knut Reinert & MPI für molekulare Genetik
+# SPDX-License-Identifier: CC-BY-4.0
+
+name: 'Deploy Documentation'
+description: 'Deploys a documentation.'
+inputs:
+  deploy_host:
+    description: "The host to deploy to."
+    type: string
+    required: true
+  deploy_user:
+    description: "The user name for connecting to the host."
+    type: string
+    required: true
+  deploy_ssh_key:
+    description: "The private SSH key for connecting to the host."
+    type: string
+    required: true
+  source_path_user_doc:
+    description: "The path to the user documentation. This is the directory containing the HTML files."
+    type: string
+    required: false
+  deploy_path_user_doc:
+    description: "The host path to deploy the user documentation to."
+    type: string
+    required: false
+  source_path_developer_doc:
+    description: "The path to the developer documentation. This is the directory containing the HTML files."
+    type: string
+    required: false
+  deploy_path_developer_doc:
+    description: "The host path to deploy the developer documentation to."
+    type: string
+    required: false
+runs:
+  using: 'composite'
+  steps:
+    - name: Error if a pull request
+      if: ${{ github.event_name == 'pull_request' }}
+      shell: bash
+      run: echo "::error title=Error::This action cannot be run on pull requests."; exit 1
+
+    - name: Input Check
+      shell: bash
+      run: |
+        if [[ -z "${{ inputs.source_path_user_doc }}" && -z "${{ inputs.source_path_developer_doc }}" ]]; then
+          echo "::error title=Error::At least one of source_path_user_doc or source_path_developer_doc must be set."
+          exit 1
+        fi
+        if [[ -n "${{ inputs.source_path_user_doc }}" && -z "${{ inputs.deploy_path_user_doc }}" ]]; then
+          echo "::error title=Error::deploy_path_user_doc must be set if source_path_user_doc is set."
+          exit 1
+        fi
+        if [[ -n "${{ inputs.source_path_developer_doc }}" && -z "${{ inputs.deploy_path_developer_doc }}" ]]; then
+          echo "::error title=Error::deploy_path_developer_doc must be set if source_path_developer_doc is set."
+          exit 1
+        fi
+
+    - name: Deploy User documentation
+      if: ${{ inputs.source_path_user_doc != '' }}
+      uses: burnett01/rsync-deployments@7.0.1
+      with:
+        switches: --recursive --delete --timeout=60 --omit-dir-times --mkpath
+        path: ${{ inputs.source_path_user_doc }}
+        remote_path: ${{ inputs.deploy_path_user_doc }}
+        remote_host: ${{ inputs.deploy_host }}
+        remote_user: ${{ inputs.deploy_user }}
+        remote_key: ${{ inputs.deploy_ssh_key }}
+
+    - name: Deploy Developer documentation
+      if: ${{ inputs.source_path_developer_doc != '' }}
+      uses: burnett01/rsync-deployments@7.0.1
+      with:
+        switches: --recursive --delete --timeout=60 --omit-dir-times --mkpath
+        path: ${{ inputs.source_path_developer_doc }}
+        remote_path: ${{ inputs.deploy_path_developer_doc }}
+        remote_host: ${{ inputs.deploy_host }}
+        remote_user: ${{ inputs.deploy_user }}
+        remote_key: ${{ inputs.deploy_ssh_key }}
