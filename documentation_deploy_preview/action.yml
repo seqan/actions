@@ -41,6 +41,14 @@ runs:
       shell: bash
       run: echo "::error title=Error::This action can only be run on pull requests."; exit 1
 
+    - name: Input Check
+      shell: bash
+      run: |
+        if [[ "${{ inputs.deploy_base_path }}" != $(readlink -m "${{ inputs.deploy_base_path }}") ]]; then
+            echo "::error title=Error::deploy_base_path must be an absolute path and not end in '/'."
+            exit 1
+        fi
+
     - name: Package Preview Dual Documentation
       if: ${{ inputs.source_path_developer_doc != '' }}
       shell: bash
