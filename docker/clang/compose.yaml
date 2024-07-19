@@ -3,6 +3,15 @@
 # SPDX-License-Identifier: CC-BY-4.0
 
 services:
+  clang-16:
+    image: ghcr.io/seqan/clang-16
+    build:
+      additional_contexts:
+        common: ../common
+      dockerfile: Dockerfile
+      args:
+        CLANG_VERSION: 16
+
   clang-17:
     image: ghcr.io/seqan/clang-17
     build:
