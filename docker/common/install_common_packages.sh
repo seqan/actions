@@ -21,6 +21,7 @@ apt-get install --yes --no-install-recommends --no-upgrade \
     make \
     patch \
     wget \
-    zlib1g-dev
+    zlib1g-dev \
+    xz-utils
 
 rm -rf /var/lib/apt/lists/*
