@@ -6,7 +6,7 @@
 
 FROM debian:unstable-slim
 
-ARG INTEL_VERSION=2024.1
+ARG INTEL_VERSION=2024.2
 
 SHELL ["/bin/bash", "-Eeuxo", "pipefail", "-c"]
 
@@ -20,28 +20,24 @@ RUN /docker_scripts/install_common_packages.sh && \
 ENV CC=icx
 ENV CXX=icpx
 
-ENV ACL_BOARD_VENDOR_PATH=/opt/Intel/OpenCLFPGA/oneAPI/Boards
-ENV CMAKE_PREFIX_PATH=/opt/intel/oneapi/tbb/2021.12/env/..:/opt/intel/oneapi/dpl/2022.5/lib/cmake/oneDPL:/opt/intel/oneapi/compiler/2024.1
-ENV CMPLR_ROOT=/opt/intel/oneapi/compiler/2024.1
-ENV CPATH=/opt/intel/oneapi/tbb/2021.12/env/../include:/opt/intel/oneapi/dpl/2022.5/include:/opt/intel/oneapi/dev-utilities/2024.1/include:/opt/intel/oneapi/compiler/2024.1/opt/oclfpga/include
-ENV DIAGUTIL_PATH=/opt/intel/oneapi/debugger/2024.1/etc/debugger/sys_check/sys_check.py:/opt/intel/oneapi/compiler/2024.1/etc/compiler/sys_check/sys_check.sh
-ENV DPL_ROOT=/opt/intel/oneapi/dpl/2022.5
-ENV FPGA_VARS_ARGS=
-ENV FPGA_VARS_DIR=/opt/intel/oneapi/compiler/2024.1/opt/oclfpga
-ENV GDB_INFO=/opt/intel/oneapi/debugger/2024.1/share/info/
-ENV INFOPATH=/opt/intel/oneapi/debugger/2024.1/opt/debugger/lib
-ENV INTEL_PYTHONHOME=/opt/intel/oneapi/debugger/2024.1/opt/debugger
-ENV INTELFPGAOCLSDKROOT=/opt/intel/oneapi/compiler/2024.1/opt/oclfpga
-ENV LD_LIBRARY_PATH=/opt/intel/oneapi/tbb/2021.12/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/dpl/2022.5/lib:/opt/intel/oneapi/debugger/2024.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2024.1/opt/oclfpga/host/linux64/lib:/opt/intel/oneapi/compiler/2024.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2024.1/lib:/lib64:/usr/lib64:/usr/local/lib64:/lib:/usr/lib:/usr/local/lib:
-ENV LIBRARY_PATH=/opt/intel/oneapi/tbb/2021.12/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/dpl/2022.5/lib:/opt/intel/oneapi/compiler/2024.1/lib:/lib64:/usr/lib64:/usr/local/lib64:/lib:/usr/lib:/usr/local/lib
-ENV MANPATH=/opt/intel/oneapi/debugger/2024.1/share/man:/opt/intel/oneapi/compiler/2024.1/share/man
-ENV NLSPATH=/opt/intel/oneapi/compiler/2024.1/lib/compiler/locale/%l_%t/%N
-ENV OCL_ICD_FILENAMES=libintelocl_emu.so:libalteracl.so:/opt/intel/oneapi/compiler/2024.1/lib/libintelocl.so
+ENV CMAKE_PREFIX_PATH=/opt/intel/oneapi/tbb/2021.13/env/..:/opt/intel/oneapi/dpl/2022.6/lib/cmake/oneDPL:/opt/intel/oneapi/compiler/2024.2
+ENV CMPLR_ROOT=/opt/intel/oneapi/compiler/2024.2
+ENV CPATH=/opt/intel/oneapi/tbb/2021.13/env/../include:/opt/intel/oneapi/dpl/2022.6/include:/opt/intel/oneapi/dev-utilities/2024.2/include
+ENV DIAGUTIL_PATH=/opt/intel/oneapi/debugger/2024.2/etc/debugger/sys_check/sys_check.py:/opt/intel/oneapi/compiler/2024.2/etc/compiler/sys_check/sys_check.sh
+ENV DPL_ROOT=/opt/intel/oneapi/dpl/2022.6
+ENV GDB_INFO=/opt/intel/oneapi/debugger/2024.2/share/info/
+ENV INFOPATH=/opt/intel/oneapi/debugger/2024.2/share/info
+ENV INTEL_PYTHONHOME=/opt/intel/oneapi/debugger/2024.2/opt/debugger
+ENV LD_LIBRARY_PATH=/opt/intel/oneapi/tbb/2021.13/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/dpl/2022.6/lib:/opt/intel/oneapi/debugger/2024.2/opt/debugger/lib:/opt/intel/oneapi/compiler/2024.2/opt/compiler/lib:/opt/intel/oneapi/compiler/2024.2/lib
+ENV LIBRARY_PATH=/opt/intel/oneapi/tbb/2021.13/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/dpl/2022.6/lib:/opt/intel/oneapi/compiler/2024.2/lib
+ENV MANPATH=/opt/intel/oneapi/debugger/2024.2/share/man:/opt/intel/oneapi/compiler/2024.2/share/man:
+ENV NLSPATH=/opt/intel/oneapi/compiler/2024.2/lib/compiler/locale/%l_%t/%N
+ENV OCL_ICD_FILENAMES=/opt/intel/oneapi/compiler/2024.2/lib/libintelocl.so
 ENV ONEAPI_ROOT=/opt/intel/oneapi
-ENV PATH=/opt/intel/oneapi/dev-utilities/2024.1/bin:/opt/intel/oneapi/debugger/2024.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2024.1/opt/oclfpga/bin:/opt/intel/oneapi/compiler/2024.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-ENV PKG_CONFIG_PATH=/opt/intel/oneapi/tbb/2021.12/env/../lib/pkgconfig:/opt/intel/oneapi/dpl/2022.5/lib/pkgconfig:/opt/intel/oneapi/compiler/2024.1/lib/pkgconfig
+ENV PATH=/opt/intel/oneapi/dev-utilities/2024.2/bin:/opt/intel/oneapi/debugger/2024.2/opt/debugger/bin:/opt/intel/oneapi/compiler/2024.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV PKG_CONFIG_PATH=/opt/intel/oneapi/tbb/2021.13/env/../lib/pkgconfig:/opt/intel/oneapi/dpl/2022.6/lib/pkgconfig:/opt/intel/oneapi/compiler/2024.2/lib/pkgconfig
 ENV SETVARS_COMPLETED=1
-ENV TBBROOT=/opt/intel/oneapi/tbb/2021.12/env/..
+ENV TBBROOT=/opt/intel/oneapi/tbb/2021.13/env/..
 
 ENV CCACHE_BASEDIR=/home/runner/
 ENV CCACHE_DIR=/home/runner/.ccache

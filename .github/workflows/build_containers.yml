@@ -40,6 +40,16 @@ jobs:
         working-directory: ./docker/${{ matrix.compiler }}
         run: docker compose build
 
+      - name: Test container
+        working-directory: ./docker/${{ matrix.compiler }}
+        run: |
+          set +x
+          for SERVICE in $(docker compose config --services); do
+            echo "Testing ${SERVICE}"
+            docker compose run ${SERVICE} bash -c "$(cat ../test/compile_test.sh)"
+            echo -e "Done\n"
+          done
+
       - name: Log in to registry
         if: github.repository_owner == 'seqan' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
