@@ -17,7 +17,7 @@ fi
 
 # Download the SDE tarball
 # Update the link here if the version changes
-wget -q -O ${SDE_TARGET_FILE} https://downloadmirror.intel.com/813591/sde-external-9.33.0-2024-01-07-lin.tar.xz
+wget -q -O ${SDE_TARGET_FILE} https://downloadmirror.intel.com/823664/sde-external-9.38.0-2024-04-18-lin.tar.xz
 
 # Create the extraction directory if it doesn't exist
 mkdir -p ${SDE_EXTRACTION_PATH}
