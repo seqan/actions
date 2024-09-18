@@ -24,13 +24,13 @@ install_via_brew()
     else
         # Unlink the package. brew unlink does not take a version.
         brew unlink $package_name || true
-        brew upgrade $brew_package_name
+        brew upgrade $brew_package_name || true
     fi
 
     # We link the package, i.e. we add symlinks into /usr/local/bin. They requested version of the package should superseed
     # other installed versions (`--overwrite`). For example, when requesting gcc@10 while gcc@11 is already installed and
     # linked, we want to overwrite those links and use gcc@10 instead.
-    brew link --overwrite $brew_package_name
+    brew link --overwrite $brew_package_name || true
 }
 
 if [ "$RUNNER_OS" == "Linux" ]; then
