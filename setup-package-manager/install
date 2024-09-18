@@ -6,33 +6,6 @@
 
 set -Eeuo pipefail
 
-install_via_brew()
-{
-    brew_package_name="$1" # llvm@15
-    package_name=$(echo $brew_package_name | awk -F '@' '{print $1; }') # llvm
-    package_version=$(echo $brew_package_name | awk -F '@' '{print $2; }') # 15
-
-    # General idea:
-    # `brew list --versions` returns true (0) if package is installed, and false (1) otherwise.
-    # package_name: The package name without a version, e.g. "ccache" and "gcc".
-    # brew_package_name: The package followed by an optional version, e.g. "ccache" and "gcc@11".
-
-    # If the package is installed, we upgrade. Otherwise, we install it.
-    # If output empty.
-    if [[ -z $(brew list --versions $brew_package_name) ]]; then
-        brew install $brew_package_name || true
-    else
-        # Unlink the package. brew unlink does not take a version.
-        brew unlink $package_name || true
-        brew upgrade $brew_package_name || true
-    fi
-
-    # We link the package, i.e. we add symlinks into /usr/local/bin. They requested version of the package should superseed
-    # other installed versions (`--overwrite`). For example, when requesting gcc@10 while gcc@11 is already installed and
-    # linked, we want to overwrite those links and use gcc@10 instead.
-    brew link --overwrite $brew_package_name || true
-}
-
 if [ "$RUNNER_OS" == "Linux" ]; then
     # gcc-13 -> g++-13
     sudo apt-get install --yes "${@//gcc/g++}"
@@ -42,7 +15,7 @@ elif [ "$RUNNER_OS" == "macOS" ]; then
         if [[ $ARG == clang* || $ARG == gcc* ]]; then
             ARG=$(echo ${ARG/clang/llvm} | awk -F '-' '{print $1"@"$2}')
         fi
-        install_via_brew $ARG
+        brew install --quiet $ARG
     done
 else
     echo "OS ${$RUNNER_OS} is not supported"

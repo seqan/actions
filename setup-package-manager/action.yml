@@ -19,9 +19,7 @@ runs:
   - name: Configure Homebrew
     if: runner.os == 'macOS' && env.SEQAN_ACTIONS_SETUP_PACKAGE_MANAGER_RAN != 'true'
     shell: bash
-    run: |
-      echo "HOMEBREW_NO_INSTALL_CLEANUP=1" >> "$GITHUB_ENV"
-      echo "HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1" >> "$GITHUB_ENV"
+    run: brew analytics on
 
   - name: Export install script
     if: env.SEQAN_ACTIONS_SETUP_PACKAGE_MANAGER_RAN != 'true'
@@ -36,4 +34,3 @@ runs:
     if: env.SEQAN_ACTIONS_SETUP_PACKAGE_MANAGER_RAN != 'true'
     shell: bash
     run: echo "SEQAN_ACTIONS_SETUP_PACKAGE_MANAGER_RAN=true" >> "$GITHUB_ENV"
-
