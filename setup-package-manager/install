@@ -16,7 +16,6 @@ install_via_brew()
     # `brew list --versions` returns true (0) if package is installed, and false (1) otherwise.
     # package_name: The package name without a version, e.g. "ccache" and "gcc".
     # brew_package_name: The package followed by an optional version, e.g. "ccache" and "gcc@11".
-    # `--force-bottle` will cause brew to use precompiled binaries. Sometimes brew likes to build compilers from scratch.
 
     # If the package is installed, we upgrade. Otherwise, we install it.
     # If output empty.
@@ -25,7 +24,7 @@ install_via_brew()
     else
         # Unlink the package. brew unlink does not take a version.
         brew unlink $package_name || true
-        brew upgrade --force-bottle $brew_package_name
+        brew upgrade $brew_package_name
     fi
 
     # We link the package, i.e. we add symlinks into /usr/local/bin. They requested version of the package should superseed
