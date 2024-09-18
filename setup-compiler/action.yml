@@ -48,7 +48,11 @@ runs:
         CLANG=${{ inputs.compiler }}
         CLANG_VERSION=${CLANG:6}
         INSTALL_PREFIX=$(brew --prefix llvm@${CLANG_VERSION})
-        echo "LDFLAGS=-L${INSTALL_PREFIX}/lib/c++ -Wl,-rpath,${INSTALL_PREFIX}/lib/c++" >> "$GITHUB_ENV"
+        if [[ CLANG_VERSION -gt 17 ]]; then
+          echo "LDFLAGS=-L${INSTALL_PREFIX}/lib/c++ -L${INSTALL_PREFIX}/lib/libunwind.dylib -Wl,-rpath,${INSTALL_PREFIX}/lib/c++" >> "$GITHUB_ENV"
+        else
+          echo "LDFLAGS=-L${INSTALL_PREFIX}/lib/c++ -Wl,-rpath,${INSTALL_PREFIX}/lib/c++" >> "$GITHUB_ENV"
+        fi
         sudo ln -fs ${INSTALL_PREFIX}/bin/clang++ ${INSTALL_PREFIX}/bin/clang++-${CLANG_VERSION}
         sudo ln -fs ${INSTALL_PREFIX}/bin/llvm-ar ${INSTALL_PREFIX}/bin/ar
         sudo ln -fs ${INSTALL_PREFIX}/bin/llvm-as ${INSTALL_PREFIX}/bin/as
