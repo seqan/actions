@@ -20,7 +20,7 @@ install_via_brew()
     # If the package is installed, we upgrade. Otherwise, we install it.
     # If output empty.
     if [[ -z $(brew list --versions $brew_package_name) ]]; then
-        brew install --force-bottle $brew_package_name || true
+        brew install $brew_package_name || true
     else
         # Unlink the package. brew unlink does not take a version.
         brew unlink $package_name || true
