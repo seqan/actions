@@ -33,7 +33,6 @@ runs:
     uses: actions/cache@v4
     with:
       path: ${{ env.CCACHE_DIR }}
-      save-always: true
       key: ccache-${{ runner.os }}-${{ github.workflow }}-${{ join(matrix.*, ' - ') }}-${{ github.ref }}-${{ github.run_id }}
       restore-keys: |
         ccache-${{ runner.os }}-${{ github.workflow }}-${{ join(matrix.*, ' - ') }}-${{ github.ref }}
