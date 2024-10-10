@@ -12,10 +12,12 @@ SHELL ["/bin/bash", "-Eeuxo", "pipefail", "-c"]
 
 COPY docker_scripts /docker_scripts
 COPY --from=common install_common_packages.sh /docker_scripts/
+COPY --from=common show_versions.sh /docker_scripts/
 
 RUN /docker_scripts/install_common_packages.sh && \
     /docker_scripts/install_packages.sh ${INTEL_VERSION} && \
-    /docker_scripts/install_symlinks.sh ${INTEL_VERSION}
+    /docker_scripts/install_symlinks.sh ${INTEL_VERSION} && \
+    /docker_scripts/show_versions.sh
 
 ENV CC=icx
 ENV CXX=icpx

@@ -14,11 +14,13 @@ SHELL ["/bin/bash", "-Eeuxo", "pipefail", "-c"]
 COPY docker_scripts /docker_scripts
 COPY --from=common install_common_packages.sh /docker_scripts/
 COPY --from=common install_sde.sh /docker_scripts/
+COPY --from=common show_versions.sh /docker_scripts/
 
 RUN /docker_scripts/install_common_packages.sh && \
     /docker_scripts/install_packages.sh ${GCC_VERSION} && \
     /docker_scripts/install_symlinks.sh ${GCC_VERSION} && \
-    /docker_scripts/install_sde.sh ${SDE_DIR}
+    /docker_scripts/install_sde.sh ${SDE_DIR} && \
+    /docker_scripts/show_versions.sh
 
 ENV PATH=${SDE_DIR}:${PATH}
 ENV CC=gcc-${GCC_VERSION}

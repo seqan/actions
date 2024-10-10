@@ -34,7 +34,8 @@ jobs:
         compiler: [gcc, clang, intel]
     if: github.repository_owner == 'seqan' || github.event_name == 'workflow_dispatch'
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Build image
         working-directory: ./docker/${{ matrix.compiler }}
@@ -46,15 +47,71 @@ jobs:
           set +x
           for SERVICE in $(docker compose config --services); do
             echo "Testing ${SERVICE}"
-            docker compose run ${SERVICE} bash -c "$(cat ../test/compile_test.sh)"
+            docker compose run --rm ${SERVICE} bash -c "$(cat ../test/compile_test.sh)"
             echo -e "Done\n"
           done
 
+      - name: Export versions
+        working-directory: ./docker/${{ matrix.compiler }}
+        run: |
+          set +x
+          for SERVICE in $(docker compose config --services); do
+            echo "Exporting versions in ${SERVICE}"
+            mkdir -p ${{ runner.temp }}/versions/${SERVICE}/
+            docker compose up ${SERVICE}
+            docker compose cp ${SERVICE}:/installed_packages.version ${{ runner.temp }}/versions/${SERVICE}/
+            docker compose cp ${SERVICE}:/manually_installed_packages.version ${{ runner.temp }}/versions/${SERVICE}/
+            docker compose down ${SERVICE}
+            echo -e "Done\n"
+          done
+
+      - name: Upload versions
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.compiler }}.versions
+          path: ${{ runner.temp }}/versions
+          retention-days: 1
+
       - name: Log in to registry
-        if: github.repository_owner == 'seqan' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        if: github.repository_owner == 'seqan' && github.event_name != 'pull_request'
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Push image
-        if: github.repository_owner == 'seqan' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        if: github.repository_owner == 'seqan' && github.event_name != 'pull_request'
         working-directory: ./docker/${{ matrix.compiler }}
         run: docker compose push
+
+  update_wiki:
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'seqan' && github.event_name != 'pull_request'
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: 'seqan/actions.wiki'
+          token: ${{ secrets.SEQAN_ACTIONS_PAT }}
+
+      - name: Download versions
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ runner.temp }}/versions
+          merge-multiple: true
+
+      - name: Update wiki
+        run: python3 replace.py . ${{ runner.temp }}/versions
+
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.SEQAN_ACTIONS_GPG_KEY }}
+          passphrase: ${{ secrets.SEQAN_ACTIONS_GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: seqan-actions[bot]
+          author_email: seqan-actions@users.noreply.github.com
+          message: 'Update Package Versions'
