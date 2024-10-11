@@ -27,3 +27,6 @@ tar xf ${SDE_TARGET_FILE} -C ${SDE_EXTRACTION_PATH} --strip-components=1
 
 # Clean up
 rm ${SDE_TARGET_FILE}
+
+# Add the SDE version to the versions file
+echo -e "intel-sde*\t9.38" | tee -a /manually_installed_packages.version /installed_packages.version > /dev/null
