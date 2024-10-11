@@ -16,8 +16,15 @@ if [[ -z "${SDE_EXTRACTION_PATH}" ]]; then
 fi
 
 # Download the SDE tarball
-# Update the link here if the version changes
-wget -q -O ${SDE_TARGET_FILE} https://downloadmirror.intel.com/823664/sde-external-9.38.0-2024-04-18-lin.tar.xz
+# Update the following variables if the SDE version changes
+DIR_PATH="831748"
+SDE_VERSION="9.44.0"
+SDE_DATE="2024-08-22"
+
+# Example: https://downloadmirror.intel.com/831748/sde-external-9.44.0-2024-08-22-lin.tar.xz
+FULL_URL="https://downloadmirror.intel.com/${DIR_PATH}/sde-external-${SDE_VERSION}-${SDE_DATE}-lin.tar.xz"
+
+wget -q -O ${SDE_TARGET_FILE} ${FULL_URL}
 
 # Create the extraction directory if it doesn't exist
 mkdir -p ${SDE_EXTRACTION_PATH}
@@ -29,4 +36,4 @@ tar xf ${SDE_TARGET_FILE} -C ${SDE_EXTRACTION_PATH} --strip-components=1
 rm ${SDE_TARGET_FILE}
 
 # Add the SDE version to the versions file
-echo -e "intel-sde*\t9.38" | tee -a /manually_installed_packages.version /installed_packages.version > /dev/null
+echo -e "intel-sde*\t${SDE_VERSION}" | tee -a /manually_installed_packages.version /installed_packages.version > /dev/null
