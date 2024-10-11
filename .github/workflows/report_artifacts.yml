@@ -41,7 +41,7 @@ jobs:
             /repos/seqan/actions/pulls \
             -F head=${{ github.event.workflow_run.head_repository.owner.login }}:${{ github.event.workflow_run.head_branch }} \
             -q '.[0] .number')
-          echo "::set-output name=pr_number::${number}"
+          echo "pr_number=${number}" >> $GITHUB_OUTPUT
 
       - name: Create Comment Body
         env:
