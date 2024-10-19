@@ -43,6 +43,7 @@ runs:
       if: inputs.gpg_key != '' && inputs.gpg_passphrase != ''
       uses: crazy-max/ghaction-import-gpg@v6
       with:
+        workdir: repo
         gpg_private_key: ${{ inputs.gpg_key }}
         passphrase: ${{ inputs.gpg_passphrase }}
         git_user_signingkey: true
