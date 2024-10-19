@@ -1,0 +1,64 @@
+# SPDX-FileCopyrightText: 2006-2024 Knut Reinert & Freie Universität Berlin
+# SPDX-FileCopyrightText: 2016-2024 Knut Reinert & MPI für molekulare Genetik
+# SPDX-License-Identifier: CC-BY-4.0
+
+name: 'Update CPM Package Lock'
+description: 'Updates packages in a CPM package-lock file'
+inputs:
+  package_lock_file:
+    description: "Path to CPM's package lock file."
+    required: true
+  ignored_packages:
+    description: "List of packages to ignore."
+    required: false
+  token:
+    description: "Personal Access Token (PAT)."
+    required: true
+  gpg_key:
+    description: "Private GPG key for signing commits."
+    required: false
+  gpg_passphrase:
+    description: "Passphrase for GPG key."
+    required: false
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        token: ${{ inputs.token }}
+        path: repo
+
+    - name: Update CPM Package Lock
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+      run: |
+        mkdir -p build && cd build
+        cmake ${{ github.action_path }} \
+          -DPACKAGE_LOCK="${GITHUB_WORKSPACE}/repo/${{ inputs.package_lock_file }}" \
+          "-DIGNORED_PACKAGES=${{ inputs.ignored_packages }}"
+
+    - name: Import GPG key
+      if: inputs.gpg_key != '' && inputs.gpg_passphrase != ''
+      uses: crazy-max/ghaction-import-gpg@v6
+      with:
+        gpg_private_key: ${{ inputs.gpg_key }}
+        passphrase: ${{ inputs.gpg_passphrase }}
+        git_user_signingkey: true
+        git_commit_gpgsign: true
+
+    - name: Open PR
+      uses: peter-evans/create-pull-request@v7
+      with:
+        token: ${{ inputs.token }}
+        commit-message: "[INFRA] Update CPM Packages"
+        committer: "seqan-actions[bot] <seqan-actions@users.noreply.github.com>"
+        author: "seqan-actions[bot] <seqan-actions@users.noreply.github.com>"
+        branch: "actions/update_cpm_package_lock"
+        delete-branch: true
+        title: "[INFRA] Update CPM Packages"
+        body: ""
+        path: repo
+        add-paths: |
+          ${{ inputs.package_lock_file }}
