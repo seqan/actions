@@ -56,9 +56,9 @@ runs:
         mkdir -p preview/{user,developer}
         cp -r ${{ inputs.source_path_user_doc }}/* preview/user/
         cp -r ${{ inputs.source_path_developer_doc }}/* preview/developer/
-        cp ${{ github.action_path }}/index.html preview/
-        cp ${{ github.action_path }}/seqan_logo.svg preview/
-        cp ${{ github.action_path }}/style.css preview/
+        cp ${GITHUB_ACTION_PATH}/index.html preview/
+        cp ${GITHUB_ACTION_PATH}/seqan_logo.svg preview/
+        cp ${GITHUB_ACTION_PATH}/style.css preview/
 
     - name: Package Preview Single Documentation
       if: ${{ inputs.source_path_developer_doc == '' }}

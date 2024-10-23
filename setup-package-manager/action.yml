@@ -10,7 +10,7 @@ runs:
   - name: Configure APT
     if: runner.os == 'Linux' && env.SEQAN_ACTIONS_SETUP_PACKAGE_MANAGER_RAN != 'true'
     shell: bash
-    run: ${{ github.action_path }}/configure_apt.sh
+    run: ${GITHUB_ACTION_PATH}/configure_apt.sh
 
   - name: Setup Homebrew
     if: runner.os == 'macOS' && env.SEQAN_ACTIONS_SETUP_PACKAGE_MANAGER_RAN != 'true'
@@ -27,7 +27,7 @@ runs:
     run: |
       SCRIPT_DIR=/tmp/seqan_actions_setup_package_manager
       mkdir -p ${SCRIPT_DIR}
-      cp ${{ github.action_path }}/install ${SCRIPT_DIR}
+      cp ${GITHUB_ACTION_PATH}/install ${SCRIPT_DIR}
       echo "${SCRIPT_DIR}" >> $GITHUB_PATH
 
   - name: Export environment variable
