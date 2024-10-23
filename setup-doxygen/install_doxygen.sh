@@ -13,10 +13,6 @@ if [ "$RUNNER_OS" != "Linux" ]; then
     exit 1
 fi
 
-if ! command -v sudo >/dev/null; then
-    alias sudo=eval
-fi
-
 sudo apt-get update
 sudo apt-get install graphviz # graphviz for dot
 mkdir -p /tmp/doxygen-download
