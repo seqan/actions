@@ -50,7 +50,11 @@ runs:
         INSTALL_PREFIX=$(brew --prefix llvm@${CLANG_VERSION})
         # https://github.com/llvm/llvm-project/issues/92121
         if [[ CLANG_VERSION -gt 17 ]]; then
-          echo "LDFLAGS=-L${INSTALL_PREFIX}/lib/c++ -L${INSTALL_PREFIX}/lib -lunwind -Wl,-rpath,${INSTALL_PREFIX}/lib/c++ -Wl,-rpath,${INSTALL_PREFIX}/lib" >> "$GITHUB_ENV"
+          if [[ CLANG_VERSION -gt 19 ]]; then
+            echo "LDFLAGS=-L${INSTALL_PREFIX}/lib/c++ -L${INSTALL_PREFIX}/lib/unwind -lunwind -Wl,-rpath,${INSTALL_PREFIX}/lib/c++ -Wl,-rpath,${INSTALL_PREFIX}/lib/unwind" >> "$GITHUB_ENV"
+          else
+            echo "LDFLAGS=-L${INSTALL_PREFIX}/lib/c++ -L${INSTALL_PREFIX}/lib/ -lunwind -Wl,-rpath,${INSTALL_PREFIX}/lib/c++ -Wl,-rpath,${INSTALL_PREFIX}/lib/" >> "$GITHUB_ENV"
+          fi
         else
           echo "LDFLAGS=-L${INSTALL_PREFIX}/lib/c++ -Wl,-rpath,${INSTALL_PREFIX}/lib/c++" >> "$GITHUB_ENV"
         fi
