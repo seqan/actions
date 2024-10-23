@@ -13,4 +13,4 @@ runs:
   steps:
   - name: Install CMake
     shell: bash
-    run: ${{ github.action_path }}/install_cmake.sh ${{ inputs.cmake }}
+    run: ${GITHUB_ACTION_PATH}/install_cmake.sh ${{ inputs.cmake }}

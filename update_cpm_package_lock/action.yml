@@ -35,7 +35,7 @@ runs:
         GH_TOKEN: ${{ inputs.token }}
       run: |
         mkdir -p build && cd build
-        cmake ${{ github.action_path }} \
+        cmake ${GITHUB_ACTION_PATH} \
           -DPACKAGE_LOCK="${GITHUB_WORKSPACE}/repo/${{ inputs.package_lock_file }}" \
           "-DIGNORED_PACKAGES=${{ inputs.ignored_packages }}"
 

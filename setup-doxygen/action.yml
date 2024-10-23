@@ -13,4 +13,4 @@ runs:
   steps:
   - name: Install Doxygen
     shell: bash
-    run: ${{ github.action_path }}/install_doxygen.sh ${{ inputs.doxygen }}
+    run: ${GITHUB_ACTION_PATH}/install_doxygen.sh ${{ inputs.doxygen }}
