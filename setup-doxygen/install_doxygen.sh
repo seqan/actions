@@ -13,6 +13,11 @@ if [ "$RUNNER_OS" != "Linux" ]; then
     exit 1
 fi
 
+if ! command -v sudo >/dev/null; then
+    alias sudo=eval
+fi
+
+sudo apt-get update
 sudo apt-get install graphviz # graphviz for dot
 mkdir -p /tmp/doxygen-download
 wget --retry-connrefused --waitretry=30 --read-timeout=30 --timeout=30 --tries=20 --no-clobber --quiet --directory-prefix=/tmp/doxygen-download/ https://github.com/doxygen/doxygen/releases/download/Release_${DOXYGEN_VERSION//./_}/doxygen-${DOXYGEN_VERSION}.linux.bin.tar.gz
