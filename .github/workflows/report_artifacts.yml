@@ -40,6 +40,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             /repos/seqan/actions/pulls \
             -F head=${{ github.event.workflow_run.head_repository.owner.login }}:${{ github.event.workflow_run.head_branch }} \
+            -F state=all \
             -q '.[0] .number')
           echo "pr_number=${number}" >> $GITHUB_OUTPUT
 
