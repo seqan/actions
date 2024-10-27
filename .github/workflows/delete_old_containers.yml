@@ -1,0 +1,47 @@
+# SPDX-FileCopyrightText: 2006-2024 Knut Reinert & Freie Universität Berlin
+# SPDX-FileCopyrightText: 2016-2024 Knut Reinert & MPI für molekulare Genetik
+# SPDX-License-Identifier: CC-BY-4.0
+
+name: Delete Old Containers
+
+on:
+  workflow_run:
+    workflows:
+      - Build Containers
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: delete
+  cancel-in-progress: false
+
+env:
+  TZ: Europe/Berlin
+
+defaults:
+  run:
+    shell: bash -Eexuo pipefail {0}
+
+jobs:
+  delete_old_containers:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [clang-15, clang-16, clang-17, clang-18, clang-19, gcc-11, gcc-12, gcc-13, gcc-14, intel]
+    if: github.repository_owner == 'seqan' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Delete old containers
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: ${{ matrix.package }}
+          package-type: container
+          min-versions-to-keep: 2
+          delete-only-untagged-versions: true
+
