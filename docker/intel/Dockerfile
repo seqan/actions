@@ -6,7 +6,7 @@
 
 FROM debian:unstable-slim
 
-ARG INTEL_VERSION=2024.2
+ARG INTEL_VERSION=2025.0
 
 SHELL ["/bin/bash", "-Eeuxo", "pipefail", "-c"]
 
@@ -22,24 +22,26 @@ RUN /docker_scripts/install_common_packages.sh && \
 ENV CC=icx
 ENV CXX=icpx
 
-ENV CMAKE_PREFIX_PATH=/opt/intel/oneapi/tbb/2021.13/env/..:/opt/intel/oneapi/dpl/2022.6/lib/cmake/oneDPL:/opt/intel/oneapi/compiler/2024.2
-ENV CMPLR_ROOT=/opt/intel/oneapi/compiler/2024.2
-ENV CPATH=/opt/intel/oneapi/tbb/2021.13/env/../include:/opt/intel/oneapi/dpl/2022.6/include:/opt/intel/oneapi/dev-utilities/2024.2/include
-ENV DIAGUTIL_PATH=/opt/intel/oneapi/debugger/2024.2/etc/debugger/sys_check/sys_check.py:/opt/intel/oneapi/compiler/2024.2/etc/compiler/sys_check/sys_check.sh
-ENV DPL_ROOT=/opt/intel/oneapi/dpl/2022.6
-ENV GDB_INFO=/opt/intel/oneapi/debugger/2024.2/share/info/
-ENV INFOPATH=/opt/intel/oneapi/debugger/2024.2/share/info
-ENV INTEL_PYTHONHOME=/opt/intel/oneapi/debugger/2024.2/opt/debugger
-ENV LD_LIBRARY_PATH=/opt/intel/oneapi/tbb/2021.13/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/dpl/2022.6/lib:/opt/intel/oneapi/debugger/2024.2/opt/debugger/lib:/opt/intel/oneapi/compiler/2024.2/opt/compiler/lib:/opt/intel/oneapi/compiler/2024.2/lib
-ENV LIBRARY_PATH=/opt/intel/oneapi/tbb/2021.13/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/dpl/2022.6/lib:/opt/intel/oneapi/compiler/2024.2/lib
-ENV MANPATH=/opt/intel/oneapi/debugger/2024.2/share/man:/opt/intel/oneapi/compiler/2024.2/share/man:
-ENV NLSPATH=/opt/intel/oneapi/compiler/2024.2/lib/compiler/locale/%l_%t/%N
-ENV OCL_ICD_FILENAMES=/opt/intel/oneapi/compiler/2024.2/lib/libintelocl.so
+ENV CMAKE_PREFIX_PATH=/opt/intel/oneapi/tbb/2022.0/env/..:/opt/intel/oneapi/dpl/2022.7/lib/cmake/oneDPL:/opt/intel/oneapi/compiler/2025.0
+ENV CMPLR_ROOT=/opt/intel/oneapi/compiler/2025.0
+ENV CPATH=/opt/intel/oneapi/umf/0.9/include:/opt/intel/oneapi/tbb/2022.0/env/../include:/opt/intel/oneapi/dpl/2022.7/include:/opt/intel/oneapi/dev-utilities/2025.0/include
+ENV DIAGUTIL_PATH=/opt/intel/oneapi/compiler/2025.0/etc/compiler/sys_check/sys_check.sh
+ENV DPL_ROOT=/opt/intel/oneapi/dpl/2022.7
+ENV GDB_INFO=/opt/intel/oneapi/debugger/2025.0/share/info/
+ENV INFOPATH=/opt/intel/oneapi/debugger/2025.0/share/info
+ENV INTEL_PYTHONHOME=/opt/intel/oneapi/debugger/2025.0/opt/debugger
+ENV LD_LIBRARY_PATH=/opt/intel/oneapi/tcm/1.2/lib:/opt/intel/oneapi/umf/0.9/lib:/opt/intel/oneapi/tbb/2022.0/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/debugger/2025.0/opt/debugger/lib:/opt/intel/oneapi/compiler/2025.0/opt/compiler/lib:/opt/intel/oneapi/compiler/2025.0/lib
+ENV LIBRARY_PATH=/opt/intel/oneapi/tcm/1.2/lib:/opt/intel/oneapi/umf/0.9/lib:/opt/intel/oneapi/tbb/2022.0/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/compiler/2025.0/lib
+ENV MANPATH=/opt/intel/oneapi/debugger/2025.0/share/man:/opt/intel/oneapi/compiler/2025.0/share/man:
+ENV NLSPATH=/opt/intel/oneapi/compiler/2025.0/lib/compiler/locale/%l_%t/%N
+ENV OCL_ICD_FILENAMES=/opt/intel/oneapi/compiler/2025.0/lib/libintelocl.so
 ENV ONEAPI_ROOT=/opt/intel/oneapi
-ENV PATH=/opt/intel/oneapi/dev-utilities/2024.2/bin:/opt/intel/oneapi/debugger/2024.2/opt/debugger/bin:/opt/intel/oneapi/compiler/2024.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-ENV PKG_CONFIG_PATH=/opt/intel/oneapi/tbb/2021.13/env/../lib/pkgconfig:/opt/intel/oneapi/dpl/2022.6/lib/pkgconfig:/opt/intel/oneapi/compiler/2024.2/lib/pkgconfig
+ENV PATH=/opt/intel/oneapi/dev-utilities/2025.0/bin:/opt/intel/oneapi/debugger/2025.0/opt/debugger/bin:/opt/intel/oneapi/compiler/2025.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV PKG_CONFIG_PATH=/opt/intel/oneapi/tbb/2022.0/env/../lib/pkgconfig:/opt/intel/oneapi/dpl/2022.7/lib/pkgconfig:/opt/intel/oneapi/compiler/2025.0/lib/pkgconfig
 ENV SETVARS_COMPLETED=1
-ENV TBBROOT=/opt/intel/oneapi/tbb/2021.13/env/..
+ENV TBBROOT=/opt/intel/oneapi/tbb/2022.0/env/..
+ENV TCM_ROOT=/opt/intel/oneapi/tcm/1.2
+ENV UMF_ROOT=/opt/intel/oneapi/umf/0.9
 
 ENV CCACHE_BASEDIR=/home/runner/
 ENV CCACHE_DIR=/home/runner/.ccache
