@@ -26,7 +26,26 @@ defaults:
     shell: bash -Eexuo pipefail {0}
 
 jobs:
+  get_container_names:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read
+      contents: read
+    outputs:
+      container_names: ${{ steps.get_container_names.outputs.container_names }}
+    if: github.repository_owner == 'seqan' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Get container names
+        id: get_container_names
+        # https://github.com/cli/cli/issues/9606#issuecomment-2433338481
+        env:
+          GH_TOKEN: ${{ secrets.SEQAN_ACTIONS_PAT }}
+        run: |
+          container_names=$(gh api -XGET /orgs/seqan/packages -F package_type=container | jq '.[].name' | jq --slurp --compact-output)
+          echo "container_names=${container_names}" >> $GITHUB_OUTPUT
+
   delete_old_containers:
+    needs: get_container_names
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -34,7 +53,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package: [clang-15, clang-16, clang-17, clang-18, clang-19, gcc-11, gcc-12, gcc-13, gcc-14, intel]
+        package: ${{ fromJSON(needs.get_container_names.outputs.container_names) }}
     if: github.repository_owner == 'seqan' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Delete old containers
