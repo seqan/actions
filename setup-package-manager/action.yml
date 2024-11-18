@@ -34,3 +34,8 @@ runs:
     if: env.SEQAN_ACTIONS_SETUP_PACKAGE_MANAGER_RAN != 'true'
     shell: bash
     run: echo "SEQAN_ACTIONS_SETUP_PACKAGE_MANAGER_RAN=true" >> "$GITHUB_ENV"
+
+  - name: Export CPM config
+    shell: bash
+    run: |
+      echo "CPM_SOURCE_CACHE=${{ github.workspace }}/.cpm" >> "$GITHUB_ENV"

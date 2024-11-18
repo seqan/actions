@@ -34,5 +34,6 @@ ENV CCACHE_MAXSIZE=75M
 ENV CCACHE_COMPILERCHECK=content
 ENV CTEST_NO_TESTS_ACTION=error
 ENV CTEST_OUTPUT_ON_FAILURE=1
+ENV CPM_SOURCE_CACHE=/home/runner/.cpm
 ENV GNUMAKEFLAGS="-j4 --no-print-directory --output-sync=target"
 ENV MAKEFLAGS="-j4 --no-print-directory --output-sync=target"
