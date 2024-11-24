@@ -1,0 +1,103 @@
+# SPDX-FileCopyrightText: 2006-2024 Knut Reinert & Freie Universität Berlin
+# SPDX-FileCopyrightText: 2016-2024 Knut Reinert & MPI für molekulare Genetik
+# SPDX-License-Identifier: CC-BY-4.0
+
+name: 'CodeChecker'
+description: 'Runs CodeChecker and deploys report.'
+inputs:
+  configure_path:
+    description: "The path to run CMake on."
+    type: string
+    required: false
+    default: ..
+  deploy_host:
+    description: "The host to deploy to."
+    type: string
+    required: false
+  deploy_user:
+    description: "The user name for connecting to the host."
+    type: string
+    required: false
+  deploy_ssh_key:
+    description: "The private SSH key for connecting to the host."
+    type: string
+    required: false
+  deploy_path:
+    description: "The host path to deploy the HTML report to."
+    type: string
+    required: false
+runs:
+  using: 'composite'
+  steps:
+    - name: Input Check
+      shell: bash
+      run: |
+        if [[ -n "${{ inputs.deploy_path }}" && -z "${{ inputs.deploy_host }}" ]]; then
+          echo "::error title=Error::deploy_host must be set if deploy_path is set."
+          exit 1
+        fi
+        if [[ -n "${{ inputs.deploy_path }}" && -z "${{ inputs.deploy_user }}" ]]; then
+          echo "::error title=Error::deploy_user must be set if deploy_path is set."
+          exit 1
+        fi
+        if [[ -n "${{ inputs.deploy_path }}" && -z "${{ inputs.deploy_ssh_key }}" ]]; then
+          echo "::error title=Error::deploy_ssh_key must be set if deploy_path is set."
+          exit 1
+        fi
+        if [[ -n "${{ inputs.deploy_path }}" && "${{ inputs.deploy_path }}" != $(readlink -m "${{ inputs.deploy_path }}") ]]; then
+            echo "::error title=Error::deploy_path must be an absolute path and not end in '/'."
+            exit 1
+        fi
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup
+      shell: bash
+      run: |
+        apt-get update
+        apt-get install --yes python3-venv python3-dev g++-14 cppcheck
+        apt-get remove --yes ccache
+        python3 -m venv /venv
+        { set +x; source /venv/bin/activate; set -x; }
+        pip install codechecker
+        echo "CC_ANALYZER_BIN=clangsa:$(which clang-19);clang-tidy:$(which clang-tidy-19);gcc:$(which g++-14)" >> $GITHUB_ENV
+        patch --batch --forward --quiet --reject-file=- ${patch_me} ${GITHUB_ACTION_PATH}/codechecker.patch || true
+
+    - name: Run CodeChecker
+      shell: bash
+      run: |
+        { set +x; source /venv/bin/activate; set -x; }
+        mkdir build && cd build
+        cmake ${{ inputs.configure_path }} -DCMAKE_CXX_COMPILER=clang++-19 \
+                                            -DCMAKE_CXX_FLAGS="-stdlib=libc++" \
+                                            -DCMAKE_BUILD_TYPE=Debug \
+                                            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        CodeChecker analyzers -o table
+        if [[ -f ../.github/config/codechecker.skip ]]; then
+          sed -i 's@\${GITHUB_WORKSPACE}@'"${GITHUB_WORKSPACE}"'@g' ../.github/config/codechecker.skip
+        fi
+        CodeChecker analyze --config ../.github/config/codechecker.yml \
+                            --output=./results \
+                            compile_commands.json
+        CodeChecker parse --config ../.github/config/codechecker.yml \
+                          ./results | grep -v -e "Parsing input" -e "No report data in" -e "Html file was generated" || true
+        sed -i 's/<option value="100">/<option value="100" selected>/g' html/index.html
+        sed -i 's@<title>Plist HTML Viewer</title>@<title>CodeChecker ${{ github.event.repository.name }}</title>@g' html/*.html
+
+    - name: Upload Report
+      if: ${{ inputs.deploy_user == '' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: codechecker-report-${{ github.event.repository.name }}
+        path: build/html
+
+    - name: Deploy Report
+      if: ${{ inputs.deploy_user != '' }}
+      uses: seqan/actions/documentation_deploy_production@main
+      with:
+        deploy_host: ${{ inputs.deploy_host }}
+        deploy_user: ${{ inputs.deploy_user }}
+        deploy_ssh_key: ${{ inputs.deploy_ssh_key }}
+        source_path_user_doc: build/html/
+        deploy_path_user_doc: ${{ inputs.deploy_path }}

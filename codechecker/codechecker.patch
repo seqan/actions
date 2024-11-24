@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: 2006-2024 Knut Reinert & Freie Universität Berlin
+# SPDX-FileCopyrightText: 2016-2024 Knut Reinert & MPI für molekulare Genetik
+# SPDX-License-Identifier: CC-BY-4.0
+From 2cbb867eb305f7cec93a6a7dbbd64b1ff131e8b2 Mon Sep 17 00:00:00 2001
+From: Enrico Seiler <enrico.seiler@hotmail.de>
+Date: Tue, 19 Nov 2024 16:00:05 +0100
+Subject: [PATCH] fix: trim_path_prefixes for html reports
+
+---
+ .../codechecker_report_converter/report/output/html/html.py     | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/report-converter/codechecker_report_converter/report/output/html/html.py b/tools/report-converter/codechecker_report_converter/report/output/html/html.py
+index c102199cfd..85bacfed4b 100644
+--- a/tools/report-converter/codechecker_report_converter/report/output/html/html.py
++++ b/tools/report-converter/codechecker_report_converter/report/output/html/html.py
+@@ -309,7 +309,7 @@ def create_index_html(self, output_dir: str):
+
+         table_reports = map(lambda data: {
+             'link': os.path.basename(data['link']),
+-            'file-path': data['report']['fileId'],
++            'file-path': self.files[data['report']['fileId']]['filePath'],
+             'report-hash': data['report']['reportHash'],
+             'checker-name': data['report']['checker']['name'],
+             'checker-url': data['report']['checker']['url'],
