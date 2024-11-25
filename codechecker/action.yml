@@ -63,7 +63,7 @@ runs:
         pip --quiet --quiet install codechecker
         echo "CC_ANALYZER_BIN=clangsa:$(which clang-19);clang-tidy:$(which clang-tidy-19);gcc:$(which g++-14)" >> $GITHUB_ENV
         patch_dir=$(find /venv/ -type d -name "codechecker_report_converter")
-        patch --batch --forward --quiet --reject-file=- --directory=${patch_dir} --strip=4 ${GITHUB_ACTION_PATH}/codechecker.patch || true
+        patch --batch --forward --quiet --reject-file=- --directory=${patch_dir} --strip=4 <${GITHUB_ACTION_PATH}/codechecker.patch || true
 
     - name: Run CodeChecker
       shell: bash
