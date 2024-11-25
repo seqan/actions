@@ -15,7 +15,7 @@ index c102199cfd..85bacfed4b 100644
 --- a/tools/report-converter/codechecker_report_converter/report/output/html/html.py
 +++ b/tools/report-converter/codechecker_report_converter/report/output/html/html.py
 @@ -309,7 +309,7 @@ def create_index_html(self, output_dir: str):
-
+ 
          table_reports = map(lambda data: {
              'link': os.path.basename(data['link']),
 -            'file-path': data['report']['fileId'],
@@ -38,7 +38,7 @@ index 1c7a829b06..2dd4f45141 100644
 --- a/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css
 +++ b/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css
 @@ -17,4 +17,5 @@ table tr:nth-child(even) {
-
+ 
  table tr > td {
    padding: 5px;
 +  word-wrap: break-word;
@@ -55,5 +55,27 @@ index 990d81632a..a6c671d30a 100644
 +      <option value="500">500</option>
 +      <option value="1000" selected>1000</option>
      </select>
-
+ 
      <button onclick="BugList.prevPage()">&lt;</button>
+From 5a194c905a51094f57756db0d45f40b2e2677a1b Mon Sep 17 00:00:00 2001
+From: Enrico Seiler <enrico.seiler@hotmail.de>
+Date: Mon, 25 Nov 2024 17:21:10 +0100
+Subject: [PATCH] misc: add back button
+
+---
+ .../report/output/html/static/index.html                        | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html b/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
+index a6c671d30a..1f9b89c5a3 100644
+--- a/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
++++ b/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
+@@ -29,7 +29,7 @@
+   </head>
+   <body>
+   <div class="container">
+-    <a href="statistics.html" class="button">Go To Statistics</a>
++    <a href="statistics.html" class="button">Go To Statistics</a> <a href="../index.html" class="button">Go To Project List</a>
+     <table id="report-list-table">
+       <thead>
+         <tr>
