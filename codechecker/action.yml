@@ -75,7 +75,7 @@ runs:
                                             -DCMAKE_BUILD_TYPE=Debug \
                                             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         CodeChecker analyzers -o table
-        if [[ -f ../.github/config/codechecker.skip ]]; then
+        if ls ../.github/config/codechecker.skip* &>/dev/null; then
           sed -i 's@\${GITHUB_WORKSPACE}@'"${GITHUB_WORKSPACE}"'@g' ../.github/config/codechecker.skip*
         fi
         CodeChecker analyze --config ../.github/config/codechecker.yml \
