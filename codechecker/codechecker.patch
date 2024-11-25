@@ -23,3 +23,37 @@ index c102199cfd..85bacfed4b 100644
              'report-hash': data['report']['reportHash'],
              'checker-name': data['report']['checker']['name'],
              'checker-url': data['report']['checker']['url'],
+From 44394f2ef3b42dac5f700559484ee08e42686460 Mon Sep 17 00:00:00 2001
+From: Enrico Seiler <enrico.seiler@hotmail.de>
+Date: Mon, 25 Nov 2024 16:34:56 +0100
+Subject: [PATCH] misc: adjust index.html style
+
+---
+ .../report/output/html/static/css/table.css                    | 1 +
+ .../report/output/html/static/index.html                       | 3 +++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css b/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css
+index 1c7a829b06..2dd4f45141 100644
+--- a/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css
++++ b/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css
+@@ -17,4 +17,5 @@ table tr:nth-child(even) {
+
+ table tr > td {
+   padding: 5px;
++  word-wrap: break-word;
+ }
+diff --git a/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html b/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
+index 990d81632a..a6c671d30a 100644
+--- a/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
++++ b/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
+@@ -52,6 +52,9 @@
+       <option value="25">25</option>
+       <option value="50">50</option>
+       <option value="100">100</option>
++      <option value="250">250</option>
++      <option value="500">500</option>
++      <option value="1000" selected>1000</option>
+     </select>
+
+     <button onclick="BugList.prevPage()">&lt;</button>
