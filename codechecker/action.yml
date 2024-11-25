@@ -55,15 +55,15 @@ runs:
     - name: Setup
       shell: bash
       run: |
-        apt-get update
-        apt-get install --yes python3-venv python3-dev g++-14 cppcheck
-        apt-get remove --yes ccache
+        apt-get update >/dev/null
+        apt-get install --yes python3-venv python3-dev g++-14 cppcheck >/dev/null
+        apt-get remove --yes ccache >/dev/null
         python3 -m venv /venv
         { set +x; source /venv/bin/activate; set -x; }
-        pip install codechecker
+        pip --quiet --quiet install codechecker
         echo "CC_ANALYZER_BIN=clangsa:$(which clang-19);clang-tidy:$(which clang-tidy-19);gcc:$(which g++-14)" >> $GITHUB_ENV
-        patch_me=$(find /venv/ -path '*/codechecker_report_converter/report/output/html/html.py')
-        patch --batch --forward --quiet --reject-file=- ${patch_me} ${GITHUB_ACTION_PATH}/codechecker.patch || true
+        patch_dir=$(find /venv/ -type d -name "codechecker_report_converter")
+        patch --batch --forward --quiet --reject-file=- --directory=${patch_dir} --strip=4 ${GITHUB_ACTION_PATH}/codechecker.patch || true
 
     - name: Run CodeChecker
       shell: bash
@@ -76,25 +76,24 @@ runs:
                                             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         CodeChecker analyzers -o table
         if [[ -f ../.github/config/codechecker.skip ]]; then
-          sed -i 's@\${GITHUB_WORKSPACE}@'"${GITHUB_WORKSPACE}"'@g' ../.github/config/codechecker.skip
+          sed -i 's@\${GITHUB_WORKSPACE}@'"${GITHUB_WORKSPACE}"'@g' ../.github/config/codechecker.skip*
         fi
         CodeChecker analyze --config ../.github/config/codechecker.yml \
                             --output=./results \
                             compile_commands.json
         CodeChecker parse --config ../.github/config/codechecker.yml \
                           ./results | grep -v -e "Parsing input" -e "No report data in" -e "Html file was generated" || true
-        sed -i 's/<option value="100">/<option value="100" selected>/g' html/index.html
         sed -i 's@<title>Plist HTML Viewer</title>@<title>CodeChecker ${{ github.event.repository.name }}</title>@g' html/*.html
 
     - name: Upload Report
-      if: ${{ inputs.deploy_user == '' }}
+      if: ${{ inputs.deploy_path == '' }}
       uses: actions/upload-artifact@v4
       with:
         name: codechecker-report-${{ github.event.repository.name }}
         path: build/html
 
     - name: Deploy Report
-      if: ${{ inputs.deploy_user != '' }}
+      if: ${{ inputs.deploy_path != '' }}
       uses: seqan/actions/documentation_deploy_production@main
       with:
         deploy_host: ${{ inputs.deploy_host }}
