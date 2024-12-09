@@ -182,8 +182,17 @@ foreach (PACKAGE ${PACKAGE_LIST})
     if (VERSION)
         execute_process (COMMAND "gh" "api" "/repos/${REPO}/releases/latest" "-q" ".tag_name"
                          OUTPUT_VARIABLE LATEST_RELEASE
-                         OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY
+                         OUTPUT_STRIP_TRAILING_WHITESPACE
+                         ERROR_VARIABLE ERROR_MESSAGE
+                         ERROR_STRIP_TRAILING_WHITESPACE
+                         RESULT_VARIABLE RETURN_CODE
         )
+        if (RETURN_CODE)
+            message (STATUS "[WARNING] Skipping ${REPO}\n" #
+                            "    Failed to query latest release: ${ERROR_MESSAGE}"
+            )
+            continue ()
+        endif ()
         if (LATEST_RELEASE MATCHES "[vV]*(.*)")
             set (LATEST_RELEASE "${CMAKE_MATCH_1}")
         else ()
@@ -206,8 +215,17 @@ foreach (PACKAGE ${PACKAGE_LIST})
     elseif (BRANCH)
         execute_process (COMMAND "gh" "api" "/repos/${REPO}/branches/${BRANCH}" "-q" ".commit .sha"
                          OUTPUT_VARIABLE LATEST_COMMIT
-                         OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY
+                         OUTPUT_STRIP_TRAILING_WHITESPACE
+                         ERROR_VARIABLE ERROR_MESSAGE
+                         ERROR_STRIP_TRAILING_WHITESPACE
+                         RESULT_VARIABLE RETURN_CODE
         )
+        if (RETURN_CODE)
+            message (STATUS "[WARNING] Skipping ${REPO}\n" #
+                            "    Failed to query branch ${BRANCH}: ${ERROR_MESSAGE}"
+            )
+            continue ()
+        endif ()
         if (NOT TAG)
             message (STATUS "[WARNING] Skipping ${REPO}\n" #
                             "    Branch: \"${BRANCH}\"\n" #
