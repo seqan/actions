@@ -60,7 +60,7 @@ runs:
         apt-get remove --yes ccache >/dev/null
         python3 -m venv /venv
         { set +x; source /venv/bin/activate; set -x; }
-        pip --quiet --quiet install codechecker
+        pip --quiet --quiet install codechecker==6.24.4
         echo "CC_ANALYZER_BIN=clangsa:$(which clang-19);clang-tidy:$(which clang-tidy-19);gcc:$(which g++-14)" >> $GITHUB_ENV
         patch_dir=$(find /venv/ -type d -name "codechecker_report_converter")
         patch --batch --forward --quiet --reject-file=- --directory=${patch_dir} --strip=4 <${GITHUB_ACTION_PATH}/codechecker.patch || true
