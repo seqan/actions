@@ -7,19 +7,23 @@
 FROM debian:unstable-slim
 
 ARG CLANG_VERSION
+ARG SDE_DIR="/sde"
 
 SHELL ["/bin/bash", "-Eeuxo", "pipefail", "-c"]
 
 COPY docker_scripts /docker_scripts
 COPY --from=common install_common_packages.sh /docker_scripts/
+COPY --from=common install_sde.sh /docker_scripts/
 COPY --from=common show_versions.sh /docker_scripts/
 
 RUN /docker_scripts/install_common_packages.sh && \
     /docker_scripts/install_packages.sh ${CLANG_VERSION} && \
     /docker_scripts/install_wrapper.sh ${CLANG_VERSION} && \
     /docker_scripts/install_symlinks.sh ${CLANG_VERSION} && \
+    /docker_scripts/install_sde.sh ${SDE_DIR} && \
     /docker_scripts/show_versions.sh
 
+ENV PATH=${SDE_DIR}:${PATH}
 ENV CC=clang
 ENV CXX=clang++
 ENV OMP_TOOL_LIBRARIES=/usr/lib/llvm-${CLANG_VERSION}/lib/libarcher.so
