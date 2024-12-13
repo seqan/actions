@@ -7,16 +7,19 @@
 FROM debian:unstable-slim
 
 ARG INTEL_VERSION=2025.0
+ARG SDE_DIR="/sde"
 
 SHELL ["/bin/bash", "-Eeuxo", "pipefail", "-c"]
 
 COPY docker_scripts /docker_scripts
 COPY --from=common install_common_packages.sh /docker_scripts/
+COPY --from=common install_sde.sh /docker_scripts/
 COPY --from=common show_versions.sh /docker_scripts/
 
 RUN /docker_scripts/install_common_packages.sh && \
     /docker_scripts/install_packages.sh ${INTEL_VERSION} && \
     /docker_scripts/install_symlinks.sh ${INTEL_VERSION} && \
+    /docker_scripts/install_sde.sh ${SDE_DIR} && \
     /docker_scripts/show_versions.sh
 
 ENV CC=icx
@@ -36,7 +39,7 @@ ENV MANPATH=/opt/intel/oneapi/debugger/2025.0/share/man:/opt/intel/oneapi/compil
 ENV NLSPATH=/opt/intel/oneapi/compiler/2025.0/lib/compiler/locale/%l_%t/%N
 ENV OCL_ICD_FILENAMES=/opt/intel/oneapi/compiler/2025.0/lib/libintelocl.so
 ENV ONEAPI_ROOT=/opt/intel/oneapi
-ENV PATH=/opt/intel/oneapi/dev-utilities/2025.0/bin:/opt/intel/oneapi/debugger/2025.0/opt/debugger/bin:/opt/intel/oneapi/compiler/2025.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV PATH=${SDE_DIR}:/opt/intel/oneapi/dev-utilities/2025.0/bin:/opt/intel/oneapi/debugger/2025.0/opt/debugger/bin:/opt/intel/oneapi/compiler/2025.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ENV PKG_CONFIG_PATH=/opt/intel/oneapi/tbb/2022.0/env/../lib/pkgconfig:/opt/intel/oneapi/dpl/2022.7/lib/pkgconfig:/opt/intel/oneapi/compiler/2025.0/lib/pkgconfig
 ENV SETVARS_COMPLETED=1
 ENV TBBROOT=/opt/intel/oneapi/tbb/2022.0/env/..
