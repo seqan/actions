@@ -4,17 +4,17 @@
 From 2cbb867eb305f7cec93a6a7dbbd64b1ff131e8b2 Mon Sep 17 00:00:00 2001
 From: Enrico Seiler <enrico.seiler@hotmail.de>
 Date: Tue, 19 Nov 2024 16:00:05 +0100
-Subject: [PATCH] fix: trim_path_prefixes for html reports
+Subject: [PATCH 1/4] fix: trim_path_prefixes for html reports
 
 ---
  .../codechecker_report_converter/report/output/html/html.py     | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/tools/report-converter/codechecker_report_converter/report/output/html/html.py b/tools/report-converter/codechecker_report_converter/report/output/html/html.py
-index c102199cfd..85bacfed4b 100644
+index c102199c..85bacfed 100644
 --- a/tools/report-converter/codechecker_report_converter/report/output/html/html.py
 +++ b/tools/report-converter/codechecker_report_converter/report/output/html/html.py
-@@ -309,7 +309,7 @@ def create_index_html(self, output_dir: str):
+@@ -309,7 +309,7 @@ class HtmlBuilder:
  
          table_reports = map(lambda data: {
              'link': os.path.basename(data['link']),
@@ -23,10 +23,13 @@ index c102199cfd..85bacfed4b 100644
              'report-hash': data['report']['reportHash'],
              'checker-name': data['report']['checker']['name'],
              'checker-url': data['report']['checker']['url'],
+-- 
+2.45.2
+
 From bcee178660448f0c3568a22d481117676901705f Mon Sep 17 00:00:00 2001
 From: Enrico Seiler <enrico.seiler@hotmail.de>
 Date: Mon, 25 Nov 2024 16:34:56 +0100
-Subject: [PATCH] misc: adjust index.html style
+Subject: [PATCH 2/4] misc: adjust index.html style
 
 ---
  .../report/output/html/static/css/table.css                    | 1 +
@@ -34,7 +37,7 @@ Subject: [PATCH] misc: adjust index.html style
  2 files changed, 4 insertions(+)
 
 diff --git a/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css b/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css
-index 1c7a829b06..2dd4f45141 100644
+index 1c7a829b..2dd4f451 100644
 --- a/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css
 +++ b/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css
 @@ -17,4 +17,5 @@ table tr:nth-child(even) {
@@ -44,7 +47,7 @@ index 1c7a829b06..2dd4f45141 100644
 +  word-wrap: break-word;
  }
 diff --git a/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html b/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
-index 990d81632a..732347a933 100644
+index 990d8163..732347a9 100644
 --- a/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
 +++ b/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
 @@ -52,6 +52,9 @@
@@ -57,17 +60,20 @@ index 990d81632a..732347a933 100644
      </select>
  
      <button onclick="BugList.prevPage()">&lt;</button>
+-- 
+2.45.2
+
 From 439cd363d0d0e3064339849ab5d2d429bebc8aa0 Mon Sep 17 00:00:00 2001
 From: Enrico Seiler <enrico.seiler@hotmail.de>
 Date: Mon, 25 Nov 2024 17:21:10 +0100
-Subject: [PATCH] misc: add back button
+Subject: [PATCH 3/4] misc: add back button
 
 ---
  .../report/output/html/static/index.html                        | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html b/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
-index 732347a933..4c97317282 100644
+index 732347a9..4c973172 100644
 --- a/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
 +++ b/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
 @@ -29,7 +29,7 @@
@@ -79,3 +85,41 @@ index 732347a933..4c97317282 100644
      <table id="report-list-table">
        <thead>
          <tr>
+-- 
+2.45.2
+
+From 57c04ecb915881e6c3255360869f2ac87490536a Mon Sep 17 00:00:00 2001
+From: Enrico Seiler <enrico.seiler@hotmail.de>
+Date: Fri, 17 Jan 2025 12:52:22 +0100
+Subject: [PATCH 4/4] misc: add last modified
+
+---
+ .../report/output/html/static/index.html                    | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html b/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
+index 4c973172..041c08ea 100644
+--- a/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
++++ b/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
+@@ -29,7 +29,7 @@
+   </head>
+   <body>
+   <div class="container">
+-    <a href="statistics.html" class="button">Go To Statistics</a> <a href="../index.html" class="button">Go To Project List</a>
++    <a href="statistics.html" class="button">Go To Statistics</a> <a href="../index.html" class="button">Go To Project List</a> <p class="button" id="lastModified"></p>
+     <table id="report-list-table">
+       <thead>
+         <tr>
+@@ -61,5 +61,9 @@
+     <select id="page-number" onchange="BugList.selectPage(this.value)"></select>
+     <button onclick="BugList.nextPage()">&gt;</button>
+   </div>
++  <script>
++    const text = new Date(document.lastModified).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' });
++    document.getElementById("lastModified").innerHTML = text;
++  </script>
+   </body>
+ </html>
+-- 
+2.45.2
+
