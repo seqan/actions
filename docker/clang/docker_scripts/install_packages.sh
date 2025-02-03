@@ -26,7 +26,8 @@ apt-get install --yes --no-install-recommends \
 
 # Overwrite libpython3.11 dependency for libomp-16-dev.
 if [[ CLANG_VERSION -eq 16 ]]; then
-    cd /tmp
+    mkdir -p /tmp/libomp
+    cd /tmp/libomp
     apt-get download libomp-16-dev
     dpkg-deb -x libomp-16-dev*.deb libomp-16-dev
     dpkg-deb --control libomp-16-dev*.deb libomp-16-dev/DEBIAN
@@ -35,6 +36,7 @@ if [[ CLANG_VERSION -eq 16 ]]; then
     dpkg -b libomp-16-dev libomp-16-dev.deb
     apt-get install --yes --no-install-recommends ./libomp-16-dev.deb
     rm -f libomp-16-dev.deb
+    rm -fdr /tmp/libomp
 else
     apt-get install --yes --no-install-recommends libomp-${CLANG_VERSION}-dev
 fi
