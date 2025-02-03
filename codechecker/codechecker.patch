@@ -1,5 +1,5 @@
-# SPDX-FileCopyrightText: 2006-2024 Knut Reinert & Freie Universität Berlin
-# SPDX-FileCopyrightText: 2016-2024 Knut Reinert & MPI für molekulare Genetik
+# SPDX-FileCopyrightText: 2006-2025 Knut Reinert & Freie Universität Berlin
+# SPDX-FileCopyrightText: 2016-2025 Knut Reinert & MPI für molekulare Genetik
 # SPDX-License-Identifier: CC-BY-4.0
 From 2cbb867eb305f7cec93a6a7dbbd64b1ff131e8b2 Mon Sep 17 00:00:00 2001
 From: Enrico Seiler <enrico.seiler@hotmail.de>
@@ -15,7 +15,7 @@ index c102199c..85bacfed 100644
 --- a/tools/report-converter/codechecker_report_converter/report/output/html/html.py
 +++ b/tools/report-converter/codechecker_report_converter/report/output/html/html.py
 @@ -309,7 +309,7 @@ class HtmlBuilder:
- 
+
          table_reports = map(lambda data: {
              'link': os.path.basename(data['link']),
 -            'file-path': data['report']['fileId'],
@@ -23,7 +23,7 @@ index c102199c..85bacfed 100644
              'report-hash': data['report']['reportHash'],
              'checker-name': data['report']['checker']['name'],
              'checker-url': data['report']['checker']['url'],
--- 
+--
 2.45.2
 
 From bcee178660448f0c3568a22d481117676901705f Mon Sep 17 00:00:00 2001
@@ -41,7 +41,7 @@ index 1c7a829b..2dd4f451 100644
 --- a/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css
 +++ b/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css
 @@ -17,4 +17,5 @@ table tr:nth-child(even) {
- 
+
  table tr > td {
    padding: 5px;
 +  word-wrap: break-word;
@@ -58,9 +58,9 @@ index 990d8163..732347a9 100644
 +      <option value="500" selected>500</option>
 +      <option value="1000">1000</option>
      </select>
- 
+
      <button onclick="BugList.prevPage()">&lt;</button>
--- 
+--
 2.45.2
 
 From 439cd363d0d0e3064339849ab5d2d429bebc8aa0 Mon Sep 17 00:00:00 2001
@@ -85,7 +85,7 @@ index 732347a9..4c973172 100644
      <table id="report-list-table">
        <thead>
          <tr>
--- 
+--
 2.45.2
 
 From 57c04ecb915881e6c3255360869f2ac87490536a Mon Sep 17 00:00:00 2001
@@ -120,6 +120,6 @@ index 4c973172..041c08ea 100644
 +  </script>
    </body>
  </html>
--- 
+--
 2.45.2
 
