@@ -1,0 +1,114 @@
+# SPDX-FileCopyrightText: 2006-2024 Knut Reinert & Freie Universität Berlin
+# SPDX-FileCopyrightText: 2016-2024 Knut Reinert & MPI für molekulare Genetik
+# SPDX-License-Identifier: CC-BY-4.0
+
+name: 'IWYU'
+description: 'Runs include-what-you-use and creates PR.'
+inputs:
+  configure_path:
+    description: "The path to run CMake on."
+    type: string
+    required: false
+    default: test/unit
+  token:
+    description: "Personal Access Token (PAT)."
+    required: true
+  gpg_key:
+    description: "Private GPG key for signing commits."
+    required: true
+  gpg_passphrase:
+    description: "Passphrase for GPG key."
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Input Check
+      shell: bash
+      run: |
+        if [[ ! -d "/docker_scripts" ]] || [[ ! -f "/usr/bin/clang" ]] || ! grep -q "Knut Reinert" "/usr/bin/clang"; then
+          echo "::error title=Error::Currently only supported on ghcr.io/seqan clang images."
+          exit 1
+        fi
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        path: ${{ github.event.repository.name }}
+        token: ${{ inputs.token }}
+
+    - name: Configure Test
+      shell: bash
+      run: |
+        mkdir build && cd build
+        CMAKE_IWYU="include-what-you-use;"
+        CMAKE_IWYU+="-Xiwyu;--max_line_length=120;"
+        CMAKE_IWYU+="-Xiwyu;--comment_style=short;"
+        CMAKE_IWYU+="-Xiwyu;--update_comments;"
+        CMAKE_IWYU+="-Xiwyu;--no_fwd_decls;"
+        CMAKE_IWYU+="-Xiwyu;--cxx17ns;"
+        CMAKE_IWYU+="-Xiwyu;--transitive_includes_only;"
+        CMAKE_IWYU+="-Xiwyu;--check_also=**/include/${{ github.event.repository.name }}/**.hpp;"
+        CMAKE_IWYU+="-Xiwyu;--no_default_mappings;"
+        CMAKE_IWYU+="-Xiwyu;--mapping_file=${GITHUB_ACTION_PATH}/mappings/iwyu.imp;"
+        CMAKE_IWYU+="--stdlib=libc++"
+        cmake ../${{ github.event.repository.name }}/${{ inputs.configure_path }} -DCMAKE_BUILD_TYPE=Debug \
+                                                                                  -DCMAKE_INCLUDE_FLAG_C="-isystem" \
+                                                                                  -DCMAKE_INCLUDE_FLAG_CXX="-isystem" \
+                                                                                  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+                                                                                  -DCMAKE_CXX_INCLUDE_WHAT_YOU_USE="${CMAKE_IWYU}"
+
+    - name: Run Test
+      working-directory: build
+      shell: bash
+      run: make -j 2> out.txt
+
+    - name: Apply changes
+      working-directory: build
+      shell: bash
+      run: |
+        fix_includes.py --nosafe_headers \
+                        --comments \
+                        --noreorder \
+                        --ignore_re ".*/include/${{ github.event.repository.name }}/contrib/.*" \
+                        --only_re ".*/${{ github.event.repository.name }}/.*" < out.txt
+
+    - name: Add changes
+      id: changed_files
+      working-directory: ${{ github.event.repository.name }}
+      shell: bash
+      run: |
+        git add .
+        CPP_LIST=$(git diff --name-only HEAD | { grep -E "(\.cpp|\.hpp)$" || test $? = 1; } | xargs)
+        echo "cpp_list=$CPP_LIST" >> $GITHUB_OUTPUT
+
+    - name: Run clang-format
+      if: ${{ steps.changed_files.outputs.cpp_list }}
+      working-directory: ${{ github.event.repository.name }}
+      shell: bash
+      run: |
+        clang-format-$(clang -dumpversion | cut -f1 -d'.') --style=file -i ${{ steps.changed_files.outputs.cpp_list }}
+        git add .
+
+    - name: Import GPG key
+      if: ${{ steps.changed_files.outputs.cpp_list }}
+      uses: crazy-max/ghaction-import-gpg@v6
+      with:
+        gpg_private_key: ${{ secrets.SEQAN_ACTIONS_GPG_KEY }}
+        passphrase: ${{ secrets.SEQAN_ACTIONS_GPG_PASSPHRASE }}
+        git_user_signingkey: true
+        git_commit_gpgsign: true
+        workdir: ${{ github.event.repository.name }}
+
+    - name: Open PR
+      if: ${{ steps.changed_files.outputs.cpp_list }}
+      uses: peter-evans/create-pull-request@v7
+      with:
+        token: ${{ inputs.token }}
+        path: ${{ github.event.repository.name }}
+        commit-message: "[MISC] IWYU"
+        committer: "seqan-actions[bot] <seqan-actions@users.noreply.github.com>"
+        author: "seqan-actions[bot] <seqan-actions@users.noreply.github.com>"
+        branch: "actions/iwyu"
+        delete-branch: true
+        title: "[MISC] IWYU"
+        body: "Auto-generated include-what-you-use changes"
