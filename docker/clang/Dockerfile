@@ -21,6 +21,7 @@ RUN /docker_scripts/install_common_packages.sh && \
     /docker_scripts/install_wrapper.sh ${CLANG_VERSION} && \
     /docker_scripts/install_symlinks.sh ${CLANG_VERSION} && \
     /docker_scripts/install_sde.sh ${SDE_DIR} && \
+    /docker_scripts/install_iwyu.sh ${CLANG_VERSION} && \
     /docker_scripts/show_versions.sh
 
 ENV PATH=${SDE_DIR}:${PATH}
