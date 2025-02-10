@@ -20,16 +20,16 @@ EOM
 
 apt-get update
 apt-get install --yes --no-install-recommends \
-    clang-${CLANG_VERSION} \
-    clang-format-${CLANG_VERSION} \
-    clang-tidy-${CLANG_VERSION} \
-    libc++-${CLANG_VERSION}-dev \
-    libc++abi-${CLANG_VERSION}-dev \
-    libclang-${CLANG_VERSION}-dev \
-    libclang-rt-${CLANG_VERSION}-dev \
-    lld-${CLANG_VERSION} \
-    llvm-${CLANG_VERSION} \
-    llvm-${CLANG_VERSION}-dev
+    clang-"${CLANG_VERSION}" \
+    clang-format-"${CLANG_VERSION}" \
+    clang-tidy-"${CLANG_VERSION}" \
+    libc++-"${CLANG_VERSION}"-dev \
+    libc++abi-"${CLANG_VERSION}"-dev \
+    libclang-"${CLANG_VERSION}"-dev \
+    libclang-rt-"${CLANG_VERSION}"-dev \
+    lld-"${CLANG_VERSION}" \
+    llvm-"${CLANG_VERSION}" \
+    llvm-"${CLANG_VERSION}"-dev
 
 # Overwrite libpython3.11 dependency for libomp-16-dev.
 if [[ CLANG_VERSION -eq 16 ]]; then
@@ -45,7 +45,7 @@ if [[ CLANG_VERSION -eq 16 ]]; then
     rm -f libomp-16-dev.deb
     rm -fdr /tmp/libomp
 else
-    apt-get install --yes --no-install-recommends libomp-${CLANG_VERSION}-dev
+    apt-get install --yes --no-install-recommends libomp-"${CLANG_VERSION}"-dev
 fi
 
 rm -rf /var/lib/apt/lists/*
