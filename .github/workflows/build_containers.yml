@@ -22,7 +22,7 @@ env:
 
 defaults:
   run:
-    shell: bash -Eexuo pipefail {0}
+    shell: bash -Eeuo pipefail {0}
 
 jobs:
   build:
@@ -41,30 +41,43 @@ jobs:
 
       - name: Build image
         working-directory: ./docker/${{ matrix.compiler }}
-        run: docker compose build
+        run: docker compose build &> build.log
+
+      - name: Show logs
+        if: always()
+        working-directory: ./docker/${{ matrix.compiler }}
+        run: |
+          if [[ -n "${RUNNER_DEBUG+x}" ]]; then
+            echo "::group::Raw"
+            cat build.log
+            echo "::endgroup::"
+          fi
+          for SERVICE in $(docker compose config --services); do
+            echo "::group::${SERVICE}"
+            "${GITHUB_WORKSPACE}"/.github/process_docker_compose_log.sh build.log "${SERVICE}"
+            echo "::endgroup::"
+          done
 
       - name: Test container
         working-directory: ./docker/${{ matrix.compiler }}
         run: |
-          set +x
           for SERVICE in $(docker compose config --services); do
-            echo "Testing ${SERVICE}"
+            echo "::group::${SERVICE}"
             docker compose run --rm ${SERVICE} bash -c "$(cat ../test/compile_test.sh)"
-            echo -e "Done\n"
+            echo "::endgroup::"
           done
 
       - name: Export versions
         working-directory: ./docker/${{ matrix.compiler }}
         run: |
-          set +x
           for SERVICE in $(docker compose config --services); do
-            echo "Exporting versions in ${SERVICE}"
+            echo "::group::${SERVICE}"
             mkdir -p ${{ runner.temp }}/versions/${SERVICE}/
             docker compose up ${SERVICE}
             docker compose cp ${SERVICE}:/installed_packages.version ${{ runner.temp }}/versions/${SERVICE}/
             docker compose cp ${SERVICE}:/manually_installed_packages.version ${{ runner.temp }}/versions/${SERVICE}/
             docker compose down ${SERVICE}
-            echo -e "Done\n"
+            echo "::endgroup::"
           done
 
       - name: Upload versions
