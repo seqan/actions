@@ -18,7 +18,7 @@ Components: main
 Signed-By: /etc/apt/trusted.gpg.d/apt.llvm.org.asc
 EOM
 
-apt-get update
+apt-get update 1>/dev/null
 apt-get install --yes --no-install-recommends \
     clang-"${CLANG_VERSION}" \
     clang-format-"${CLANG_VERSION}" \
@@ -29,7 +29,8 @@ apt-get install --yes --no-install-recommends \
     libclang-rt-"${CLANG_VERSION}"-dev \
     lld-"${CLANG_VERSION}" \
     llvm-"${CLANG_VERSION}" \
-    llvm-"${CLANG_VERSION}"-dev
+    llvm-"${CLANG_VERSION}"-dev \
+    1>/dev/null
 
 # Overwrite libpython3.11 dependency for libomp-16-dev.
 if [[ CLANG_VERSION -eq 16 ]]; then
@@ -45,7 +46,7 @@ if [[ CLANG_VERSION -eq 16 ]]; then
     rm -f libomp-16-dev.deb
     rm -fdr /tmp/libomp
 else
-    apt-get install --yes --no-install-recommends libomp-"${CLANG_VERSION}"-dev
+    apt-get install --yes --no-install-recommends libomp-"${CLANG_VERSION}"-dev 1>/dev/null
 fi
 
 rm -rf /var/lib/apt/lists/*
