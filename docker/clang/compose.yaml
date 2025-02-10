@@ -47,3 +47,12 @@ services:
       dockerfile: Dockerfile
       args:
         CLANG_VERSION: 19
+
+  clang-20:
+    image: ghcr.io/seqan/clang-20
+    build:
+      additional_contexts:
+        common: ../common
+      dockerfile: Dockerfile
+      args:
+        CLANG_VERSION: 20
