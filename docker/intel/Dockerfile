@@ -9,6 +9,8 @@ FROM debian:unstable-slim
 ARG INTEL_VERSION=2025.0
 ARG SDE_DIR="/sde"
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 SHELL ["/bin/bash", "-Eeuxo", "pipefail", "-c"]
 
 COPY docker_scripts /docker_scripts
