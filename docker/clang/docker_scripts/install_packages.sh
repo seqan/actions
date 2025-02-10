@@ -9,7 +9,14 @@ set -Eeuxo pipefail
 CLANG_VERSION=$1
 
 wget -q -O /etc/apt/trusted.gpg.d/apt.llvm.org.asc https://apt.llvm.org/llvm-snapshot.gpg.key
-echo "deb http://apt.llvm.org/unstable/ llvm-toolchain-${CLANG_VERSION} main" > /etc/apt/sources.list.d/llvm.list
+
+cat > /etc/apt/sources.list.d/llvm.sources <<- EOM
+Types: deb
+URIs: https://apt.llvm.org/unstable/
+Suites: llvm-toolchain-${CLANG_VERSION}
+Components: main
+Signed-By: /etc/apt/trusted.gpg.d/apt.llvm.org.asc
+EOM
 
 apt-get update
 apt-get install --yes --no-install-recommends \
