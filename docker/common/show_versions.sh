@@ -8,6 +8,8 @@ apt list --manual-installed 2>/dev/null | \
     grep -v "Listing..." | \
     sed -E 's@(\S+)/\S+ (\S+) \S+ \S+@\1\t\2@g' >> /manually_installed_packages.version
 
+# Escape ~ sign. They are rendered as strikethrough text in markdown.
+sed -i 's@~@\\~@g' /manually_installed_packages.version
 # Some packages might have been added to the list because they are not installable via apt.
 sort -o /manually_installed_packages.version /manually_installed_packages.version
 
@@ -15,5 +17,7 @@ apt list --installed 2>/dev/null | \
     grep -v "Listing..." | \
     sed -E 's@(\S+)/\S+ (\S+) \S+ \S+@\1\t\2@g' >> /installed_packages.version
 
+# Escape ~ sign. They are rendered as strikethrough text in markdown.
+sed -i 's@~@\\~@g' /installed_packages.version
 # Some packages might have been added to the list because they are not installable via apt.
 sort -o /installed_packages.version /installed_packages.version
