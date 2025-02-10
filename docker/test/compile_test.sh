@@ -6,8 +6,13 @@
 
 set -Eeuo pipefail
 
+if [[ -z ${CXX+x} ]]; then
+    echo "CXX is not set"
+    exit 1
+fi
+
 TMP_TEST_DIR=$(mktemp --directory)
-cd ${TMP_TEST_DIR}
+cd "${TMP_TEST_DIR}"
 
 cat > hello_world.cpp <<- EOM
 #include <string>
@@ -72,8 +77,8 @@ else
 fi
 echo "Using $CXX with $STD_OPTION"
 
-$CXX ${STD_OPTION} -flto=auto -o test main.cpp hello_world.cpp
-${TMP_TEST_DIR}/test > actual.cout 2> actual.cerr
+$CXX "${STD_OPTION}" -flto=auto -o test main.cpp hello_world.cpp
+"${TMP_TEST_DIR}"/test > actual.cout 2> actual.cerr
 
 cat > expected.cout <<- EOM
 hello_world_short(): Hello!

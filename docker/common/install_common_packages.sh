@@ -6,7 +6,7 @@
 
 set -Eeuxo pipefail
 
-apt-get update
+apt-get update 1>/dev/null
 apt-get install --yes --no-install-recommends --no-upgrade \
     ca-certificates \
     ccache \
@@ -22,6 +22,7 @@ apt-get install --yes --no-install-recommends --no-upgrade \
     patch \
     wget \
     zlib1g-dev \
-    xz-utils
+    xz-utils \
+    1>/dev/null
 
 rm -rf /var/lib/apt/lists/*

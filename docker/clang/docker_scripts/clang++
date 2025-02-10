@@ -4,6 +4,7 @@
 # SPDX-FileCopyrightText: 2016-2025 Knut Reinert & MPI für molekulare Genetik
 # SPDX-License-Identifier: CC-BY-4.0
 
+# shellcheck disable=SC2199
 if [[ "$@" = "-v" ]] || [[ "$@" = "--version" ]]; then
     exec clang++-LLVMVERSION "$@"
     exit 0
