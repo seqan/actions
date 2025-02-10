@@ -46,7 +46,7 @@ cmake ../include-what-you-use-"${IWYU_VERSION}" -G "Unix Makefiles" \
                                               -DCMAKE_C_FLAGS="-w" \
                                               -DCMAKE_CXX_COMPILER=clang++-"${CLANG_VERSION}" \
                                               -DCMAKE_CXX_FLAGS="-w"
-make -j "$(nproc)"
+make
 make install
 echo -e "include-what-you-use*\t${IWYU_VERSION}" | tee -a /manually_installed_packages.version /installed_packages.version > /dev/null
 rm -fdr /tmp/iwyu

@@ -9,14 +9,20 @@ FROM debian:unstable-slim
 ARG GCC_VERSION
 ARG SDE_DIR="/sde"
 
+ENV DEBIAN_FRONTEND=noninteractive
+ENV GNUMAKEFLAGS="-j4 --no-print-directory --output-sync=target"
+ENV MAKEFLAGS="-j4 --no-print-directory --output-sync=target"
+
 SHELL ["/bin/bash", "-Eeuxo", "pipefail", "-c"]
 
 COPY docker_scripts /docker_scripts
+COPY --from=common check_available_threads.sh /docker_scripts/
 COPY --from=common install_common_packages.sh /docker_scripts/
 COPY --from=common install_sde.sh /docker_scripts/
 COPY --from=common show_versions.sh /docker_scripts/
 
-RUN /docker_scripts/install_common_packages.sh && \
+RUN /docker_scripts/check_available_threads.sh && \
+    /docker_scripts/install_common_packages.sh && \
     /docker_scripts/install_packages.sh ${GCC_VERSION} && \
     /docker_scripts/install_symlinks.sh ${GCC_VERSION} && \
     /docker_scripts/install_sde.sh ${SDE_DIR} && \
@@ -35,5 +41,3 @@ ENV CCACHE_COMPILERCHECK=content
 ENV CTEST_NO_TESTS_ACTION=error
 ENV CTEST_OUTPUT_ON_FAILURE=1
 ENV CPM_SOURCE_CACHE=/home/runner/.cpm
-ENV GNUMAKEFLAGS="-j4 --no-print-directory --output-sync=target"
-ENV MAKEFLAGS="-j4 --no-print-directory --output-sync=target"
