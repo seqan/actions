@@ -4,7 +4,7 @@
 From 2cbb867eb305f7cec93a6a7dbbd64b1ff131e8b2 Mon Sep 17 00:00:00 2001
 From: Enrico Seiler <enrico.seiler@hotmail.de>
 Date: Tue, 19 Nov 2024 16:00:05 +0100
-Subject: [PATCH 1/4] fix: trim_path_prefixes for html reports
+Subject: [PATCH 1/5] fix: trim_path_prefixes for html reports
 
 ---
  .../codechecker_report_converter/report/output/html/html.py     | 2 +-
@@ -15,7 +15,7 @@ index c102199c..85bacfed 100644
 --- a/tools/report-converter/codechecker_report_converter/report/output/html/html.py
 +++ b/tools/report-converter/codechecker_report_converter/report/output/html/html.py
 @@ -309,7 +309,7 @@ class HtmlBuilder:
-
+ 
          table_reports = map(lambda data: {
              'link': os.path.basename(data['link']),
 -            'file-path': data['report']['fileId'],
@@ -23,13 +23,13 @@ index c102199c..85bacfed 100644
              'report-hash': data['report']['reportHash'],
              'checker-name': data['report']['checker']['name'],
              'checker-url': data['report']['checker']['url'],
---
-2.45.2
+-- 
+2.47.2
 
 From bcee178660448f0c3568a22d481117676901705f Mon Sep 17 00:00:00 2001
 From: Enrico Seiler <enrico.seiler@hotmail.de>
 Date: Mon, 25 Nov 2024 16:34:56 +0100
-Subject: [PATCH 2/4] misc: adjust index.html style
+Subject: [PATCH 2/5] misc: adjust index.html style
 
 ---
  .../report/output/html/static/css/table.css                    | 1 +
@@ -41,7 +41,7 @@ index 1c7a829b..2dd4f451 100644
 --- a/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css
 +++ b/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css
 @@ -17,4 +17,5 @@ table tr:nth-child(even) {
-
+ 
  table tr > td {
    padding: 5px;
 +  word-wrap: break-word;
@@ -58,15 +58,15 @@ index 990d8163..732347a9 100644
 +      <option value="500" selected>500</option>
 +      <option value="1000">1000</option>
      </select>
-
+ 
      <button onclick="BugList.prevPage()">&lt;</button>
---
-2.45.2
+-- 
+2.47.2
 
 From 439cd363d0d0e3064339849ab5d2d429bebc8aa0 Mon Sep 17 00:00:00 2001
 From: Enrico Seiler <enrico.seiler@hotmail.de>
 Date: Mon, 25 Nov 2024 17:21:10 +0100
-Subject: [PATCH 3/4] misc: add back button
+Subject: [PATCH 3/5] misc: add back button
 
 ---
  .../report/output/html/static/index.html                        | 2 +-
@@ -85,13 +85,13 @@ index 732347a9..4c973172 100644
      <table id="report-list-table">
        <thead>
          <tr>
---
-2.45.2
+-- 
+2.47.2
 
 From 57c04ecb915881e6c3255360869f2ac87490536a Mon Sep 17 00:00:00 2001
 From: Enrico Seiler <enrico.seiler@hotmail.de>
 Date: Fri, 17 Jan 2025 12:52:22 +0100
-Subject: [PATCH 4/4] misc: add last modified
+Subject: [PATCH 4/5] misc: add last modified
 
 ---
  .../report/output/html/static/index.html                    | 6 +++++-
@@ -120,6 +120,39 @@ index 4c973172..041c08ea 100644
 +  </script>
    </body>
  </html>
---
-2.45.2
+-- 
+2.47.2
+
+From d2a64576683ea0a855d0e17c236a30d679969bc2 Mon Sep 17 00:00:00 2001
+From: Enrico Seiler <enrico.seiler@hotmail.de>
+Date: Wed, 12 Feb 2025 13:53:41 +0100
+Subject: [PATCH 5/5] misc: deduplicate
+
+---
+ .../report/output/html/html.py                         | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/tools/report-converter/codechecker_report_converter/report/output/html/html.py b/tools/report-converter/codechecker_report_converter/report/output/html/html.py
+index 85bacfed..06c1839c 100644
+--- a/tools/report-converter/codechecker_report_converter/report/output/html/html.py
++++ b/tools/report-converter/codechecker_report_converter/report/output/html/html.py
+@@ -322,7 +322,15 @@ class HtmlBuilder:
+             'timestamp': data['report']['timestamp']
+         }, html_report_links)
+ 
+-        self._tag_contents['table_reports'] = json.dumps(list(table_reports))
++        seen = set()
++        unique_data = []
++        for entry in list(table_reports):
++            key = tuple(entry[field] for field in ['file-path', 'line', 'checker-name', 'message'])
++            if key not in seen:
++                seen.add(key)
++                unique_data.append(entry)
++
++        self._tag_contents['table_reports'] = json.dumps(unique_data)
+ 
+         content = self._index.substitute(self._tag_contents)
+         output_path = os.path.join(output_dir, 'index.html')
+-- 
+2.47.2
 

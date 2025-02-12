@@ -32,6 +32,7 @@ runs:
     - name: Input Check
       shell: bash
       run: |
+        echo "::group::Input Check"
         if [[ -n "${{ inputs.deploy_path }}" && -z "${{ inputs.deploy_host }}" ]]; then
           echo "::error title=Error::deploy_host must be set if deploy_path is set."
           exit 1
@@ -48,6 +49,7 @@ runs:
             echo "::error title=Error::deploy_path must be an absolute path and not end in '/'."
             exit 1
         fi
+        echo "::endgroup::"
 
     - name: Checkout
       uses: actions/checkout@v4
@@ -55,6 +57,7 @@ runs:
     - name: Setup
       shell: bash
       run: |
+        echo "::group::Setup"
         apt-get update >/dev/null
         apt-get install --yes libxslt-dev libxml2-dev >/dev/null #!TODO: Try removing this when upgrading CodeChecker
         apt-get install --yes python3-venv python3-dev g++-14 cppcheck >/dev/null
@@ -65,16 +68,20 @@ runs:
         echo "CC_ANALYZER_BIN=clangsa:$(which clang-19);clang-tidy:$(which clang-tidy-19);gcc:$(which g++-14)" >> $GITHUB_ENV
         patch_dir=$(find /venv/ -type d -name "codechecker_report_converter")
         patch --batch --forward --quiet --reject-file=- --directory=${patch_dir} --strip=4 <${GITHUB_ACTION_PATH}/codechecker.patch || true
+        echo "::endgroup::"
 
     - name: Run CodeChecker
       shell: bash
       run: |
+        echo "::group::Configure tests"
         { set +x; source /venv/bin/activate; set -x; }
         mkdir build && cd build
         cmake ${{ inputs.configure_path }} -DCMAKE_CXX_COMPILER=clang++-19 \
                                             -DCMAKE_CXX_FLAGS="-stdlib=libc++" \
                                             -DCMAKE_BUILD_TYPE=Debug \
                                             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        echo "::endgroup::"
+        echo "::group::Run CodeChecker"
         CodeChecker analyzers -o table
         if ls ../.github/config/codechecker.skip* &>/dev/null; then
           sed -i 's@\${GITHUB_WORKSPACE}@'"${GITHUB_WORKSPACE}"'@g' ../.github/config/codechecker.skip*
@@ -85,6 +92,7 @@ runs:
         CodeChecker parse --config ../.github/config/codechecker.yml \
                           ./results | grep -v -e "Parsing input" -e "No report data in" -e "Html file was generated" || true
         sed -i 's@<title>Plist HTML Viewer</title>@<title>CodeChecker ${{ github.event.repository.name }}</title>@g' html/*.html
+        echo "::endgroup::"
 
     - name: Upload Report
       if: ${{ inputs.deploy_path == '' }}
