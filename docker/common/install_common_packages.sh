@@ -23,6 +23,7 @@ apt-get install --yes --no-install-recommends --no-upgrade \
     wget \
     zlib1g-dev \
     xz-utils \
+    yq \
     1>/dev/null
 
 rm -rf /var/lib/apt/lists/*
