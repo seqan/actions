@@ -56,3 +56,5 @@ services:
       dockerfile: Dockerfile
       args:
         CLANG_VERSION: 20
+      tags:
+        - ghcr.io/seqan/clang-latest

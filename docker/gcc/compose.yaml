@@ -38,8 +38,5 @@ services:
       dockerfile: Dockerfile
       args:
         GCC_VERSION: 14
-
-  gcc-latest:
-    extends:
-      service: gcc-14
-    image: ghcr.io/seqan/gcc-latest
+      tags:
+        - ghcr.io/seqan/gcc-latest
