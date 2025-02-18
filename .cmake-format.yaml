@@ -1,0 +1,39 @@
+# SPDX-FileCopyrightText: 2006-2025 Knut Reinert & Freie Universität Berlin
+# SPDX-FileCopyrightText: 2016-2025 Knut Reinert & MPI für molekulare Genetik
+# SPDX-License-Identifier: CC-BY-4.0
+
+parse:
+  additional_commands:
+    print:
+      kwargs:
+        STATUS: '*'
+        WARNING: '*'
+        FATAL_ERROR: '*'
+    cpmusepackagelock:
+      pargs: 1
+      spelling: CPMUsePackageLock
+format:
+  line_width: 120
+  tab_size: 4
+  separate_ctrl_name_with_space: true
+  separate_fn_name_with_space: true
+  min_prefix_chars: 20
+  max_prefix_chars: 30
+  keyword_case: upper
+  always_wrap:
+    - print/STATUS/PargGroupNode[0]
+    - FlowControlNode/print/STATUS/PargGroupNode[0]
+    - FlowControlNode/FlowControlNode/print/STATUS/PargGroupNode[0]
+    - FlowControlNode/FlowControlNode/FlowControlNode/print/STATUS/PargGroupNode[0]
+    - print/WARNING/PargGroupNode[0]
+    - FlowControlNode/print/WARNING/PargGroupNode[0]
+    - FlowControlNode/FlowControlNode/print/WARNING/PargGroupNode[0]
+    - FlowControlNode/FlowControlNode/FlowControlNode/print/WARNING/PargGroupNode[0]
+    - print/FATAL_ERROR/PargGroupNode[0]
+    - FlowControlNode/print/FATAL_ERROR/PargGroupNode[0]
+  autosort: true
+markup:
+  enable_markup: false
+lint:
+  max_statement_spacing: 1
+  max_arguments: 50
