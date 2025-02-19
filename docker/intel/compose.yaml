@@ -5,3 +5,4 @@
 services:
   intel:
     image: ghcr.io/seqan/intel
+    build: .
