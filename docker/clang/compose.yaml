@@ -38,6 +38,8 @@ services:
       dockerfile: Dockerfile
       args:
         CLANG_VERSION: 18
+      tags:
+        - ghcr.io/seqan/clang-third-latest
 
   clang-19:
     image: ghcr.io/seqan/clang-19
@@ -47,6 +49,8 @@ services:
       dockerfile: Dockerfile
       args:
         CLANG_VERSION: 19
+      tags:
+        - ghcr.io/seqan/clang-second-latest
 
   clang-20:
     image: ghcr.io/seqan/clang-20

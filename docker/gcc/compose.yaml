@@ -20,6 +20,8 @@ services:
       dockerfile: Dockerfile
       args:
         GCC_VERSION: 12
+      tags:
+        - ghcr.io/seqan/gcc-third-latest
 
   gcc-13:
     image: ghcr.io/seqan/gcc-13
@@ -29,6 +31,8 @@ services:
       dockerfile: Dockerfile
       args:
         GCC_VERSION: 13
+      tags:
+        - ghcr.io/seqan/gcc-second-latest
 
   gcc-14:
     image: ghcr.io/seqan/gcc-14
