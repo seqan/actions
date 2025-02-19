@@ -35,7 +35,7 @@ IWYU_URL+="${IWYU_VERSION}.tar.gz"
 
 mkdir -p /tmp/iwyu
 cd /tmp/iwyu
-wget -q -O "${IWYU_VERSION}".tar.gz "${IWYU_URL}"
+wget --quiet --retry-connrefused --output-document "${IWYU_VERSION}".tar.gz "${IWYU_URL}"
 tar xf "${IWYU_VERSION}".tar.gz
 mkdir build && cd build
 cmake ../include-what-you-use-"${IWYU_VERSION}" -G "Unix Makefiles" \

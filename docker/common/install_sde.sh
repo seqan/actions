@@ -24,7 +24,7 @@ SDE_DATE="2024-08-22"
 # Example: https://downloadmirror.intel.com/831748/sde-external-9.44.0-2024-08-22-lin.tar.xz
 FULL_URL="https://downloadmirror.intel.com/${DIR_PATH}/sde-external-${SDE_VERSION}-${SDE_DATE}-lin.tar.xz"
 
-wget -q -O "${SDE_TARGET_FILE}" "${FULL_URL}"
+wget --quiet --retry-connrefused --output-document "${SDE_TARGET_FILE}" "${FULL_URL}"
 
 # Create the extraction directory if it doesn't exist
 mkdir -p "${SDE_EXTRACTION_PATH}"
