@@ -102,7 +102,25 @@ jobs:
         if: github.repository_owner == 'seqan' && github.event_name != 'pull_request'
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Push image
+# `docker compose push` pushes all images in parallel.
+# Layers with the same digest hence cannot be reused.
+      - name: Push images optimized
+        if: github.repository_owner == 'seqan' && github.event_name != 'pull_request'
+        continue-on-error: true
+        working-directory: ./docker/${{ matrix.compiler }}
+        run: |
+          IMAGES=$(docker images ghcr.io/seqan/${{ matrix.compiler }}-[0-9]* --format "{{.Repository}}" | sort)
+          if [[ -n "${IMAGES}" ]]; then
+            FIRST_IMAGE=$(head -n1 <<< "${IMAGES}")
+            REST_IMAGES=$(tail -n +2 <<< "${IMAGES}")
+            docker push "${FIRST_IMAGE}"
+            for image in ${REST_IMAGES}; do
+              docker push "${image}" &
+            done
+            wait
+          fi
+
+      - name: Push images via compose
         if: github.repository_owner == 'seqan' && github.event_name != 'pull_request'
         working-directory: ./docker/${{ matrix.compiler }}
         run: docker compose push
