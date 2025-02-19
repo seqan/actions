@@ -56,14 +56,18 @@ jobs:
             cat build.log
             echo "::endgroup::"
           fi
-          echo "::group::base"
-          cat ../base.log
-          echo "::endgroup::"
-          for SERVICE in $(docker compose config --services | sort); do
-            echo "::group::${SERVICE}"
-            "${GITHUB_WORKSPACE}"/.github/process_docker_compose_log.sh build.log "${SERVICE}"
+          if [[ -f ../base.log ]]; then
+            echo "::group::base"
+            cat ../base.log
             echo "::endgroup::"
-          done
+          fi
+          if [[ -f build.log ]]; then
+            for SERVICE in $(docker compose config --services | sort); do
+              echo "::group::${SERVICE}"
+              "${GITHUB_WORKSPACE}"/.github/process_docker_compose_log.sh build.log "${SERVICE}"
+              echo "::endgroup::"
+            done
+          fi
 
       - name: Test container
         working-directory: ./docker/${{ matrix.compiler }}
