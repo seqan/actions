@@ -4,28 +4,14 @@
 # SPDX-FileCopyrightText: 2016-2025 Knut Reinert & MPI für molekulare Genetik
 # SPDX-License-Identifier: CC-BY-4.0
 
-FROM debian:unstable-slim
+FROM seqan-actions-base
 
 ARG INTEL_VERSION=2025.0
-ARG SDE_DIR="/sde"
-
-ENV DEBIAN_FRONTEND=noninteractive
-ENV GNUMAKEFLAGS="-j4 --no-print-directory --output-sync=target"
-ENV MAKEFLAGS="-j4 --no-print-directory --output-sync=target"
-
-SHELL ["/bin/bash", "-Eeuxo", "pipefail", "-c"]
 
 COPY docker_scripts /docker_scripts
-COPY --from=common check_available_threads.sh /docker_scripts/
-COPY --from=common install_common_packages.sh /docker_scripts/
-COPY --from=common install_sde.sh /docker_scripts/
-COPY --from=common show_versions.sh /docker_scripts/
 
-RUN /docker_scripts/check_available_threads.sh && \
-    /docker_scripts/install_common_packages.sh && \
-    /docker_scripts/install_packages.sh ${INTEL_VERSION} && \
+RUN /docker_scripts/install_packages.sh ${INTEL_VERSION} && \
     /docker_scripts/install_symlinks.sh ${INTEL_VERSION} && \
-    /docker_scripts/install_sde.sh ${SDE_DIR} && \
     /docker_scripts/show_versions.sh
 
 ENV CC=icx
@@ -45,19 +31,9 @@ ENV MANPATH=/opt/intel/oneapi/debugger/2025.0/share/man:/opt/intel/oneapi/compil
 ENV NLSPATH=/opt/intel/oneapi/compiler/2025.0/lib/compiler/locale/%l_%t/%N
 ENV OCL_ICD_FILENAMES=/opt/intel/oneapi/compiler/2025.0/lib/libintelocl.so
 ENV ONEAPI_ROOT=/opt/intel/oneapi
-ENV PATH=${SDE_DIR}:/opt/intel/oneapi/dev-utilities/2025.0/bin:/opt/intel/oneapi/debugger/2025.0/opt/debugger/bin:/opt/intel/oneapi/compiler/2025.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV PATH=/opt/intel/oneapi/dev-utilities/2025.0/bin:/opt/intel/oneapi/debugger/2025.0/opt/debugger/bin:/opt/intel/oneapi/compiler/2025.0/bin:${PATH}
 ENV PKG_CONFIG_PATH=/opt/intel/oneapi/tbb/2022.0/env/../lib/pkgconfig:/opt/intel/oneapi/dpl/2022.7/lib/pkgconfig:/opt/intel/oneapi/compiler/2025.0/lib/pkgconfig
 ENV SETVARS_COMPLETED=1
 ENV TBBROOT=/opt/intel/oneapi/tbb/2022.0/env/..
 ENV TCM_ROOT=/opt/intel/oneapi/tcm/1.2
 ENV UMF_ROOT=/opt/intel/oneapi/umf/0.9
-
-ENV CCACHE_BASEDIR=/home/runner/
-ENV CCACHE_DIR=/home/runner/.ccache
-ENV CCACHE_COMPRESS=true
-ENV CCACHE_COMPRESSLEVEL=12
-ENV CCACHE_MAXSIZE=75M
-ENV CCACHE_COMPILERCHECK=content
-ENV CTEST_NO_TESTS_ACTION=error
-ENV CTEST_OUTPUT_ON_FAILURE=1
-ENV CPM_SOURCE_CACHE=/home/runner/.cpm

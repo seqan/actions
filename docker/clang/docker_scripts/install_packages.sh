@@ -8,7 +8,7 @@ set -Eeuxo pipefail
 
 CLANG_VERSION=$1
 
-wget -q -O /etc/apt/trusted.gpg.d/apt.llvm.org.asc https://apt.llvm.org/llvm-snapshot.gpg.key
+wget --quiet --retry-connrefused --output-document /etc/apt/trusted.gpg.d/apt.llvm.org.asc https://apt.llvm.org/llvm-snapshot.gpg.key
 
 cat > /etc/apt/sources.list.d/llvm.sources <<- EOM
 Types: deb

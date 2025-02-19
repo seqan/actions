@@ -8,7 +8,7 @@ set -Eeuxo pipefail
 
 INTEL_VERSION=$1
 
-wget -q -O /etc/apt/trusted.gpg.d/apt.repos.intel.com.asc https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+wget --quiet --retry-connrefused --output-document /etc/apt/trusted.gpg.d/apt.repos.intel.com.asc https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
 
 # !TODO! Remove 'Trusted: yes'
 # https://community.intel.com/t5/oneAPI-Registration-Download/intel-oneapi-installation-failes-on-debian-trixie-currently/m-p/1658005
