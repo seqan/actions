@@ -47,6 +47,10 @@ jobs:
         working-directory: ./docker/${{ matrix.compiler }}
         run: docker compose build &> build.log
 
+      - name: List images
+        continue-on-error: true
+        run: docker images
+
       - name: Show logs
         if: always()
         working-directory: ./docker/${{ matrix.compiler }}
