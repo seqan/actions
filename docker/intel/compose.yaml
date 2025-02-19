@@ -5,7 +5,3 @@
 services:
   intel:
     image: ghcr.io/seqan/intel
-    build:
-      additional_contexts:
-        common: ../common
-      dockerfile: Dockerfile
