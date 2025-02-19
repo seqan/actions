@@ -5,12 +5,14 @@
 services:
   gcc-11:
     image: ghcr.io/seqan/gcc-11
+    pull_policy: never
     build:
       args:
         GCC_VERSION: 11
 
   gcc-12:
     image: ghcr.io/seqan/gcc-12
+    pull_policy: never
     build:
       args:
         GCC_VERSION: 12
@@ -19,6 +21,7 @@ services:
 
   gcc-13:
     image: ghcr.io/seqan/gcc-13
+    pull_policy: never
     build:
       args:
         GCC_VERSION: 13
@@ -27,6 +30,7 @@ services:
 
   gcc-14:
     image: ghcr.io/seqan/gcc-14
+    pull_policy: never
     build:
       args:
         GCC_VERSION: 14

@@ -5,4 +5,5 @@
 services:
   intel:
     image: ghcr.io/seqan/intel
+    pull_policy: never
     build: .
