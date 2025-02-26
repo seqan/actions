@@ -23,6 +23,11 @@ ENV CPM_SOURCE_CACHE=/home/runner/.cpm
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+ENV TZ=Europe/Berlin
+
+ENV SEQAN3_NO_VERSION_CHECK=1
+ENV SHARG_NO_VERSION_CHECK=1
+
 ENV GNUMAKEFLAGS="-j4 --no-print-directory --output-sync=target"
 ENV MAKEFLAGS="-j4 --no-print-directory --output-sync=target"
 
@@ -30,7 +35,8 @@ SHELL ["/bin/bash", "-Eeuxo", "pipefail", "-c"]
 
 COPY common /docker_scripts
 
-RUN /docker_scripts/check_available_threads.sh && \
+RUN /docker_scripts/set_default_bash_options.sh && \
+    /docker_scripts/check_available_threads.sh && \
     /docker_scripts/install_common_packages.sh && \
     /docker_scripts/install_sde.sh ${SDE_DIR}
 
