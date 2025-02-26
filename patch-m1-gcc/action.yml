@@ -23,5 +23,5 @@ runs:
           ls "${FILE}"
           sed -i '' 's@return __builtin_aarch64_rndrrs (__res);@return __builtin_aarch64_rndrrs ((long unsigned int*)__res);@g' "${FILE}"
           sed -i '' 's@return __builtin_aarch64_rndr (__res);@return __builtin_aarch64_rndr ((long unsigned int*)__res);@g' "${FILE}"
+          cat "${FILE}"
         fi
-        cat "${FILE}"
