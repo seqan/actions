@@ -10,4 +10,4 @@ if [[ "$@" = "-v" ]] || [[ "$@" = "--version" ]]; then
     exit 0
 fi
 
-exec clang-LLVMVERSION -stdlib=libc++ "$@"
+exec clang-LLVMVERSION "$@"
