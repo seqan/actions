@@ -35,8 +35,8 @@ SHELL ["/bin/bash", "-Eeuxo", "pipefail", "-c"]
 
 COPY common /docker_scripts
 
-RUN /docker_scripts/set_default_bash_options.sh && \
+RUN mkdir -p /home/runner && \
+    /docker_scripts/set_default_bash_options.sh && \
     /docker_scripts/check_available_threads.sh && \
     /docker_scripts/install_common_packages.sh && \
     /docker_scripts/install_sde.sh ${SDE_DIR}
-
