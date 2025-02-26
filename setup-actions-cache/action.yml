@@ -1,0 +1,52 @@
+# SPDX-FileCopyrightText: 2006-2025 Knut Reinert & Freie Universität Berlin
+# SPDX-FileCopyrightText: 2016-2025 Knut Reinert & MPI für molekulare Genetik
+# SPDX-License-Identifier: CC-BY-4.0
+
+name: 'Setup Cache Action'
+description: 'Sets up actions/cache'
+inputs:
+  ccache_size:
+    description: "The ccache maximum size."
+    required: false
+  cpm_lock_file:
+    description: "CPM's package lock. Only needed if not auto-detected correctly."
+    required: false
+runs:
+  using: 'composite'
+  steps:
+    - name: Get Directories
+      id: directories
+      shell: bash
+      run: |
+        set +u
+        echo "ccache=${CCACHE_DIR}" >> $GITHUB_OUTPUT
+        echo "cpm=${CPM_SOURCE_CACHE}" >> $GITHUB_OUTPUT
+        if [[ -n "${{ inputs.ccache_size }}" ]]; then
+          echo "CCACHE_MAXSIZE=${{ inputs.ccache_size }}" >> "$GITHUB_ENV"
+        fi
+        if [[ -n "${{ inputs.cpm_lock_file }}" ]]; then
+          if [[ ! -f "${{ inputs.cpm_lock_file }}" ]]; then
+            echo "::error title=Error::\"${{ inputs.cpm_lock_file }}\" does not exist."
+          fi
+          echo "cpm_lock=${{ inputs.cpm_lock_file }}" >> $GITHUB_OUTPUT
+        else
+          CPM_LOCK=$(find . -type f -wholename "*/cmake/package-lock.cmake")
+          echo "cpm_lock=${CPM_LOCK}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Load ccache
+      if: steps.directories.outputs.ccache != ''
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.directories.outputs.ccache }}
+        key: ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.compiler || matrix.name || join(matrix.*, ' - ') || github.job }}-${{ github.ref }}-${{ github.run_id }}
+        restore-keys: |
+          ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.compiler || matrix.name || join(matrix.*, ' - ') || github.job }}-${{ github.ref }}
+          ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.compiler || matrix.name || join(matrix.*, ' - ') || github.job }}
+
+    - name: Load dependency cache
+      if: steps.directories.outputs.cpm != '' && steps.directories.outputs.cpm_lock != ''
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.directories.outputs.cpm }}
+        key: cpm-${{ hashfiles(steps.directories.outputs.cpm_lock) }}

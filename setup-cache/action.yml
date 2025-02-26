@@ -29,11 +29,5 @@ runs:
       echo "CCACHE_MAXSIZE=${{ inputs.ccache_size }}" >> "$GITHUB_ENV"
       echo "CCACHE_IGNOREOPTIONS=-fprofile-abs-path" >> "$GITHUB_ENV"
 
-  - name: Load ccache
-    uses: actions/cache@v4
-    with:
-      path: ${{ env.CCACHE_DIR }}
-      key: ccache-${{ runner.os }}-${{ github.workflow }}-${{ join(matrix.*, ' - ') }}-${{ github.ref }}-${{ github.run_id }}
-      restore-keys: |
-        ccache-${{ runner.os }}-${{ github.workflow }}-${{ join(matrix.*, ' - ') }}-${{ github.ref }}
-        ccache-${{ runner.os }}-${{ github.workflow }}-${{ join(matrix.*, ' - ') }}
+  - name: Setup Cache
+    uses: seqan/actions/setup-actions-cache@main
