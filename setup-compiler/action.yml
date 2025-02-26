@@ -16,22 +16,58 @@ runs:
 
   - name: Install GCC
     if: contains(inputs.compiler, 'gcc')
+    id: install_gcc
     shell: bash
     run: |
-      install ${{ inputs.compiler }}
-      echo "CC=${{ inputs.compiler }}" >> "$GITHUB_ENV"
-      echo "CXX=$(echo ${{ inputs.compiler }} | sed 's/gcc/g++/' | sed 's/clang/clang++/')" >> "$GITHUB_ENV"
-      echo "SDKROOT=$(${{ inputs.compiler }} -v 2>&1 | sed -n 's@.*--with-sysroot=\([^ ]*\).*@\1@p')" >> "$GITHUB_ENV"
+      case "${{ inputs.compiler }}" in
+        gcc-latest)
+          COMPILER="gcc-14"
+          ;;
+        gcc-second-latest)
+          COMPILER="gcc-13"
+          ;;
+        gcc-third-latest)
+          COMPILER="gcc-12"
+          ;;
+        *)
+          COMPILER="${{ inputs.compiler }}"
+          ;;
+      esac
+      install ${COMPILER}
+      echo "CC=${COMPILER}" >> "$GITHUB_ENV"
+      echo "CXX=$(echo ${COMPILER} | sed 's/gcc/g++/')" >> "$GITHUB_ENV"
+      echo "SDKROOT=$(${COMPILER} -v 2>&1 | sed -n 's@.*--with-sysroot=\([^ ]*\).*@\1@p')" >> "$GITHUB_ENV"
+      echo "gcc=${COMPILER}" >> $GITHUB_OUTPUT
+
+  - name: Patch M1 GCC
+    if: contains(inputs.compiler, 'gcc') && runner.os == 'macOS'
+    uses: seqan/actions/patch-m1-gcc@main
+    with:
+      compiler: ${{ steps.install_gcc.outputs.gcc }}
 
   - name: Install Clang
     if: contains(inputs.compiler, 'clang')
     shell: bash
     run: |
-      install ${{ inputs.compiler }}
-      echo "CC=${{ inputs.compiler }}" >> "$GITHUB_ENV"
-      echo "CXX=$(echo ${{ inputs.compiler }} | sed 's/clang/clang++/')" >> "$GITHUB_ENV"
+      case "${{ inputs.compiler }}" in
+        clang-latest)
+          COMPILER="clang-19"
+          ;;
+        clang-second-latest)
+          COMPILER="clang-18"
+          ;;
+        clang-third-latest)
+          COMPILER="clang-17"
+          ;;
+        *)
+          COMPILER="${{ inputs.compiler }}"
+          ;;
+      esac
+      install ${COMPILER}
+      echo "CC=${COMPILER}" >> "$GITHUB_ENV"
+      echo "CXX=$(echo ${COMPILER} | sed 's/clang/clang++/')" >> "$GITHUB_ENV"
       if [ "${RUNNER_OS}" == "Linux" ]; then
-        CLANG=${{ inputs.compiler }}
+        CLANG=${COMPILER}
         CLANG_VERSION=${CLANG:6}
         install lld-${CLANG_VERSION} libc++-${CLANG_VERSION}-dev libc++abi-${CLANG_VERSION}-dev libomp-${CLANG_VERSION}-dev libclang-${CLANG_VERSION}-dev
         echo "OMP_TOOL_LIBRARIES=/usr/lib/llvm-${CLANG_VERSION}/lib/libarcher.so" >> "$GITHUB_ENV"
@@ -45,7 +81,7 @@ runs:
         fi
       fi
       if [ "${RUNNER_OS}" == "macOS" ]; then
-        CLANG=${{ inputs.compiler }}
+        CLANG=${COMPILER}
         CLANG_VERSION=${CLANG:6}
         INSTALL_PREFIX=$(brew --prefix llvm@${CLANG_VERSION})
         # https://github.com/llvm/llvm-project/issues/92121
