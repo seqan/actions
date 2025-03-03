@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: 2006-2025 Knut Reinert & Freie Universität Berlin
+# SPDX-FileCopyrightText: 2016-2025 Knut Reinert & MPI für molekulare Genetik
+# SPDX-License-Identifier: CC-BY-4.0
+From 174c46788a609146cec89aabd103166ecf84069d Mon Sep 17 00:00:00 2001
+From: Enrico Seiler <enrico.seiler@hotmail.de>
+Date: Mon, 3 Mar 2025 12:16:45 +0100
+Subject: [PATCH 6/6] fix: cppcheck 2.17 arguments
+
+---
+ .../codechecker_analyzer/analyzers/cppcheck/analyzer.py  | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/analyzer/codechecker_analyzer/analyzers/cppcheck/analyzer.py b/analyzer/codechecker_analyzer/analyzers/cppcheck/analyzer.py
+index 4ad42a29..71925bab 100644
+--- a/analyzer/codechecker_analyzer/analyzers/cppcheck/analyzer.py
++++ b/analyzer/codechecker_analyzer/analyzers/cppcheck/analyzer.py
+@@ -188,7 +188,14 @@ class Cppcheck(analyzer_base.SourceAnalyzer):
+ 
+             # unusedFunction check is for whole program analysis,
+             # which is not compatible with per source file analysis.
+-            analyzer_cmd.append('--suppress=unusedFunction')
++            # cppcheck 2.17 suppresses unusedFunction by default, having it twice is an error
++            if ('--suppress=unusedFunction' not in analyzer_cmd):
++                analyzer_cmd.append('--suppress=unusedFunction')
++            else:
++                analyzer_cmd.append('--suppress=unmatchedSuppression')
++
++            if ('--check-level=exhaustive' not in analyzer_cmd):
++                analyzer_cmd.append('--check-level=exhaustive')
+ 
+             # Add extra arguments.
+             analyzer_cmd.extend(config.analyzer_extra_arguments)
+-- 
+2.47.2
+
