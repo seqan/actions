@@ -1,10 +1,10 @@
 # SPDX-FileCopyrightText: 2006-2025 Knut Reinert & Freie Universität Berlin
 # SPDX-FileCopyrightText: 2016-2025 Knut Reinert & MPI für molekulare Genetik
 # SPDX-License-Identifier: CC-BY-4.0
-From 2cbb867eb305f7cec93a6a7dbbd64b1ff131e8b2 Mon Sep 17 00:00:00 2001
+From 120b08d4c093ea10ce6c252cc790c2ee70b6515d Mon Sep 17 00:00:00 2001
 From: Enrico Seiler <enrico.seiler@hotmail.de>
 Date: Tue, 19 Nov 2024 16:00:05 +0100
-Subject: [PATCH 1/5] fix: trim_path_prefixes for html reports
+Subject: [PATCH 1/6] fix: trim_path_prefixes for html reports
 
 ---
  .../codechecker_report_converter/report/output/html/html.py     | 2 +-
@@ -26,10 +26,10 @@ index c102199c..85bacfed 100644
 -- 
 2.47.2
 
-From bcee178660448f0c3568a22d481117676901705f Mon Sep 17 00:00:00 2001
+From c9c0177a89839e270c11ca66b8cce89a92a9dd93 Mon Sep 17 00:00:00 2001
 From: Enrico Seiler <enrico.seiler@hotmail.de>
 Date: Mon, 25 Nov 2024 16:34:56 +0100
-Subject: [PATCH 2/5] misc: adjust index.html style
+Subject: [PATCH 2/6] misc: adjust index.html style
 
 ---
  .../report/output/html/static/css/table.css                    | 1 +
@@ -63,10 +63,10 @@ index 990d8163..732347a9 100644
 -- 
 2.47.2
 
-From 439cd363d0d0e3064339849ab5d2d429bebc8aa0 Mon Sep 17 00:00:00 2001
+From d671bd9edd7cce770a9baf233e62bbee8274bca8 Mon Sep 17 00:00:00 2001
 From: Enrico Seiler <enrico.seiler@hotmail.de>
 Date: Mon, 25 Nov 2024 17:21:10 +0100
-Subject: [PATCH 3/5] misc: add back button
+Subject: [PATCH 3/6] misc: add back button
 
 ---
  .../report/output/html/static/index.html                        | 2 +-
@@ -88,10 +88,10 @@ index 732347a9..4c973172 100644
 -- 
 2.47.2
 
-From 57c04ecb915881e6c3255360869f2ac87490536a Mon Sep 17 00:00:00 2001
+From 340ac60faa9f5544365a0e7f0d433addc431e69c Mon Sep 17 00:00:00 2001
 From: Enrico Seiler <enrico.seiler@hotmail.de>
 Date: Fri, 17 Jan 2025 12:52:22 +0100
-Subject: [PATCH 4/5] misc: add last modified
+Subject: [PATCH 4/6] misc: add last modified
 
 ---
  .../report/output/html/static/index.html                    | 6 +++++-
@@ -123,10 +123,10 @@ index 4c973172..041c08ea 100644
 -- 
 2.47.2
 
-From d2a64576683ea0a855d0e17c236a30d679969bc2 Mon Sep 17 00:00:00 2001
+From 7708101b4291a2caf2ffecd1336baf466441fb68 Mon Sep 17 00:00:00 2001
 From: Enrico Seiler <enrico.seiler@hotmail.de>
 Date: Wed, 12 Feb 2025 13:53:41 +0100
-Subject: [PATCH 5/5] misc: deduplicate
+Subject: [PATCH 5/6] misc: deduplicate
 
 ---
  .../report/output/html/html.py                         | 10 +++++++++-
@@ -153,6 +153,38 @@ index 85bacfed..06c1839c 100644
  
          content = self._index.substitute(self._tag_contents)
          output_path = os.path.join(output_dir, 'index.html')
+-- 
+2.47.2
+
+From 174c46788a609146cec89aabd103166ecf84069d Mon Sep 17 00:00:00 2001
+From: Enrico Seiler <enrico.seiler@hotmail.de>
+Date: Mon, 3 Mar 2025 12:16:45 +0100
+Subject: [PATCH 6/6] fix: cppcheck 2.17 arguments
+
+---
+ .../codechecker_analyzer/analyzers/cppcheck/analyzer.py  | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/analyzer/codechecker_analyzer/analyzers/cppcheck/analyzer.py b/analyzer/codechecker_analyzer/analyzers/cppcheck/analyzer.py
+index 4ad42a29..71925bab 100644
+--- a/analyzer/codechecker_analyzer/analyzers/cppcheck/analyzer.py
++++ b/analyzer/codechecker_analyzer/analyzers/cppcheck/analyzer.py
+@@ -188,7 +188,14 @@ class Cppcheck(analyzer_base.SourceAnalyzer):
+ 
+             # unusedFunction check is for whole program analysis,
+             # which is not compatible with per source file analysis.
+-            analyzer_cmd.append('--suppress=unusedFunction')
++            # cppcheck 2.17 suppresses unusedFunction by default, having it twice is an error
++            if ('--suppress=unusedFunction' not in analyzer_cmd):
++                analyzer_cmd.append('--suppress=unusedFunction')
++            else:
++                analyzer_cmd.append('--suppress=unmatchedSuppression')
++
++            if ('--check-level=exhaustive' not in analyzer_cmd):
++                analyzer_cmd.append('--check-level=exhaustive')
+ 
+             # Add extra arguments.
+             analyzer_cmd.extend(config.analyzer_extra_arguments)
 -- 
 2.47.2
 
