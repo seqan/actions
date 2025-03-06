@@ -42,13 +42,14 @@ runs:
     - name: Update CPM
       id: update_cpm
       shell: bash
+      workdir: repo
       run: |
-        CPM_FILE=$(find repo -type f -name "CPM.cmake")
+        CPM_FILE=$(find . -type f -name "CPM.cmake")
         if [[ -n "${CPM_FILE}" ]]; then
           wget --quiet --retry-connrefused --output-document "${CPM_FILE}" https://github.com/cpm-cmake/CPM.cmake/releases/latest/download/get_cpm.cmake
           echo "cpm_file=${CPM_FILE}" >> "${GITHUB_OUTPUT}"
         fi
-        CMAKE_FORMAT_FILE=$(find repo -type f -name ".cmake-format.yaml")
+        CMAKE_FORMAT_FILE=$(find . -type f -name ".cmake-format.yaml")
         if [[ -n "${CMAKE_FORMAT_FILE}" ]]; then
           echo "cmake_format_file=${CMAKE_FORMAT_FILE}" >> "${GITHUB_OUTPUT}"
         fi
@@ -57,10 +58,11 @@ runs:
       continue-on-error: true
       if: steps.update_cpm.outputs.cpm_file && steps.update_cpm.outputs.cmake_format_file
       shell: bash
+      workdir: repo
       run : |
         SUDO=$(command -v sudo &> /dev/null && echo 'sudo' || echo '')
-        ${SUDO} apt-get update
-        ${SUDO} apt-get install --yes cmake-format
+        ${SUDO} apt-get update &> /dev/null
+        ${SUDO} apt-get install --yes cmake-format &> /dev/null
         cmake-format --version
         cmake-format --config-files ${{ steps.update_cpm.outputs.cmake_format_file }} --in-place ${{ steps.update_cpm.outputs.cpm_file}}
 
@@ -88,3 +90,4 @@ runs:
         path: repo
         add-paths: |
           ${{ inputs.package_lock_file }}
+          ${{ steps.update_cpm.outputs.cpm_file}}
