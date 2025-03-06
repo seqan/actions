@@ -42,7 +42,7 @@ runs:
     - name: Update CPM
       id: update_cpm
       shell: bash
-      workdir: repo
+      working-directory: repo
       run: |
         CPM_FILE=$(find . -type f -name "CPM.cmake")
         if [[ -n "${CPM_FILE}" ]]; then
@@ -58,7 +58,7 @@ runs:
       continue-on-error: true
       if: steps.update_cpm.outputs.cpm_file && steps.update_cpm.outputs.cmake_format_file
       shell: bash
-      workdir: repo
+      working-directory: repo
       run : |
         SUDO=$(command -v sudo &> /dev/null && echo 'sudo' || echo '')
         ${SUDO} apt-get update &> /dev/null
