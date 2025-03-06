@@ -39,6 +39,31 @@ runs:
           -DPACKAGE_LOCK="${GITHUB_WORKSPACE}/repo/${{ inputs.package_lock_file }}" \
           "-DIGNORED_PACKAGES=${{ inputs.ignored_packages }}"
 
+    - name: Update CPM
+      id: update_cpm
+      shell: bash
+      run: |
+        CPM_FILE=$(find repo -type f -name "CPM.cmake")
+        if [[ -n "${CPM_FILE}" ]]; then
+          wget --quiet --retry-connrefused --output-document "${CPM_FILE}" https://github.com/cpm-cmake/CPM.cmake/releases/latest/download/get_cpm.cmake
+          echo "cpm_file=${CPM_FILE}" >> "${GITHUB_OUTPUT}"
+        fi
+        CMAKE_FORMAT_FILE=$(find repo -type f -name ".cmake-format.yaml")
+        if [[ -n "${CMAKE_FORMAT_FILE}" ]]; then
+          echo "cmake_format_file=${CMAKE_FORMAT_FILE}" >> "${GITHUB_OUTPUT}"
+        fi
+
+    - name: Run cmake-format
+      continue-on-error: true
+      if: steps.update_cpm.outputs.cpm_file && steps.update_cpm.outputs.cmake_format_file
+      shell: bash
+      run : |
+        SUDO=$(command -v sudo &> /dev/null && echo 'sudo' || echo '')
+        ${SUDO} apt-get update
+        ${SUDO} apt-get install --yes cmake-format
+        cmake-format --version
+        cmake-format --config-files ${{ steps.update_cpm.outputs.cmake_format_file }} --in-place ${{ steps.update_cpm.outputs.cpm_file}}
+
     - name: Import GPG key
       if: inputs.gpg_key != '' && inputs.gpg_passphrase != ''
       uses: crazy-max/ghaction-import-gpg@v6
