@@ -102,6 +102,7 @@ runs:
         fi
         CodeChecker analyze --config ../.github/config/codechecker.yml \
                             --output=./results \
+                            --jobs=$(nproc) \
                             compile_commands.json
         CodeChecker parse --config ../.github/config/codechecker.yml \
                           ./results | grep -v -e "Parsing input" -e "No report data in" -e "Html file was generated" || true
