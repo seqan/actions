@@ -20,8 +20,10 @@ runs:
           INSTALL_PREFIX="$(brew --cellar gcc@${GCC_VERSION})"
           GCC_FULL_VERSION="$(brew list --versions gcc@${GCC_VERSION} | cut -d' ' -f2)"
           FILE="${INSTALL_PREFIX}/${GCC_FULL_VERSION}/lib/gcc/${GCC_VERSION}/gcc/aarch64-apple-darwin23/${GCC_VERSION}/include/arm_acle.h"
-          ls "${FILE}"
-          sed -i '' 's@return __builtin_aarch64_rndrrs (__res);@return __builtin_aarch64_rndrrs ((long unsigned int*)__res);@g' "${FILE}"
-          sed -i '' 's@return __builtin_aarch64_rndr (__res);@return __builtin_aarch64_rndr ((long unsigned int*)__res);@g' "${FILE}"
-          cat "${FILE}"
+          if [[ -f "${FILE}" ]]; then
+            ls "${FILE}"
+            sed -i '' 's@return __builtin_aarch64_rndrrs (__res);@return __builtin_aarch64_rndrrs ((long unsigned int*)__res);@g' "${FILE}"
+            sed -i '' 's@return __builtin_aarch64_rndr (__res);@return __builtin_aarch64_rndr ((long unsigned int*)__res);@g' "${FILE}"
+            cat "${FILE}"
+          fi
         fi
