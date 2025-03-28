@@ -16,5 +16,6 @@ COPY docker_scripts /docker_scripts
 RUN /docker_scripts/install_codechecker.sh ${CODECHECKER_VERSION}
 
 ENV CC_ANALYZER_BIN=clangsa:/usr/bin/clang-${CLANG_VERSION};clang-tidy:/usr/bin/clang-tidy-${CLANG_VERSION}
-
-ENTRYPOINT ["/docker_scripts/entrypoint.sh"]
+ENV PATH=/venv/codechecker/bin:${PATH}
+ENV VIRTUAL_ENV=/venv/codechecker
+ENV VIRTUAL_ENV_PROMPT=codechecker
