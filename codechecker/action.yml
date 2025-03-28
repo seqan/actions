@@ -49,51 +49,24 @@ runs:
             echo "::error title=Error::deploy_path must be an absolute path and not end in '/'."
             exit 1
         fi
+        if [[ ! -f "/venv/codechecker/bin/CodeChecker" ]]; then
+            echo "::error title=Error::Use the 'ghcr.io/seqan/codechecker' image to run this action."
+            exit 1
+        fi
         echo "::endgroup::"
 
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Workaround cppcheck
-      shell: bash
-      run: |
-        echo "::group::Workaround cppcheck"
-        mkdir cppcheck && cd cppcheck
-        wget --quiet --retry-connrefused https://github.com/danmar/cppcheck/archive/refs/tags/2.17.1.tar.gz
-        tar xf 2.17.1.tar.gz
-        cmake cppcheck-2.17.1/
-        make
-        make install
-        echo "::endgroup::"
-
-    - name: Setup
-      shell: bash
-      run: |
-        echo "::group::Setup"
-        apt-get update >/dev/null
-        apt-get install --yes libxslt-dev libxml2-dev >/dev/null #!TODO: Try removing this when upgrading CodeChecker
-        apt-get install --yes python3-venv python3-dev g++-14 >/dev/null
-        apt-get remove --yes ccache >/dev/null
-        python3 -m venv /venv
-        { set +x; source /venv/bin/activate; set -x; }
-        pip --quiet --quiet install codechecker==6.24.4
-        echo "CC_ANALYZER_BIN=clangsa:$(which clang-19);clang-tidy:$(which clang-tidy-19);gcc:$(which g++-14)" >> $GITHUB_ENV
-        patch_dir=$(find /venv/ -type d -name "codechecker_report_converter")
-        patch --batch --forward --quiet --reject-file=- --directory=${patch_dir} --strip=4 <${GITHUB_ACTION_PATH}/codechecker_report_converter.patch || true
-        patch_dir=$(find /venv/ -type d -name "codechecker_analyzer")
-        patch --batch --forward --quiet --reject-file=- --directory=${patch_dir} --strip=3 <${GITHUB_ACTION_PATH}/codechecker_analyzer.patch || true
-        echo "::endgroup::"
-
     - name: Run CodeChecker
       shell: bash
       run: |
         echo "::group::Configure tests"
-        { set +x; source /venv/bin/activate; set -x; }
         mkdir build && cd build
-        cmake ${{ inputs.configure_path }} -DCMAKE_CXX_COMPILER=clang++-19 \
-                                            -DCMAKE_CXX_FLAGS="-stdlib=libc++" \
-                                            -DCMAKE_BUILD_TYPE=Debug \
-                                            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        cmake ${{ inputs.configure_path }} -DCMAKE_CXX_COMPILER=clang++-20 \
+                                           -DCMAKE_CXX_FLAGS="-stdlib=libc++" \
+                                           -DCMAKE_BUILD_TYPE=Debug \
+                                           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         echo "::endgroup::"
         echo "::group::Run CodeChecker"
         CodeChecker analyzers -o table
