@@ -47,6 +47,11 @@ jobs:
         working-directory: ./docker/${{ matrix.compiler }}
         run: docker compose build &> build.log
 
+      - name: Build CodeChecker image
+        if: matrix.compiler == 'clang'
+        working-directory: ./docker/codechecker
+        run: docker compose build &> build.log
+
       - name: List images
         continue-on-error: true
         run: docker images
@@ -71,6 +76,11 @@ jobs:
               "${GITHUB_WORKSPACE}"/.github/process_docker_compose_log.sh build.log "${SERVICE}"
               echo "::endgroup::"
             done
+          fi
+          if [[ -f ../codechecker/build.log ]]; then
+            echo "::group::codechecker"
+            cat ../codechecker/build.log
+            echo "::endgroup::"
           fi
 
       - name: Test container
@@ -127,6 +137,11 @@ jobs:
       - name: Push images via compose
         if: github.repository_owner == 'seqan' && github.event_name != 'pull_request'
         working-directory: ./docker/${{ matrix.compiler }}
+        run: docker compose push
+
+      - name: Push CodeChecker image
+        if: github.repository_owner == 'seqan' && github.event_name != 'pull_request' && matrix.compiler == 'clang'
+        working-directory: ./docker/codechecker
         run: docker compose push
 
   update_wiki:

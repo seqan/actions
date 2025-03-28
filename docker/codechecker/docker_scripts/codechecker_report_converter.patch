@@ -1,0 +1,136 @@
+# SPDX-FileCopyrightText: 2006-2025 Knut Reinert & Freie Universität Berlin
+# SPDX-FileCopyrightText: 2016-2025 Knut Reinert & MPI für molekulare Genetik
+# SPDX-License-Identifier: CC-BY-4.0
+From 53113378d2808d6a87721462c017e400aa0cdf54 Mon Sep 17 00:00:00 2001
+From: Enrico Seiler <enrico.seiler@hotmail.de>
+Date: Mon, 25 Nov 2024 16:34:56 +0100
+Subject: [PATCH 1/4] misc: adjust index.html style
+
+---
+ .../report/output/html/static/css/table.css                    | 1 +
+ .../report/output/html/static/index.html                       | 3 +++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css b/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css
+index 1c7a829b..2dd4f451 100644
+--- a/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css
++++ b/tools/report-converter/codechecker_report_converter/report/output/html/static/css/table.css
+@@ -17,4 +17,5 @@ table tr:nth-child(even) {
+ 
+ table tr > td {
+   padding: 5px;
++  word-wrap: break-word;
+ }
+diff --git a/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html b/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
+index 990d8163..732347a9 100644
+--- a/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
++++ b/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
+@@ -52,6 +52,9 @@
+       <option value="25">25</option>
+       <option value="50">50</option>
+       <option value="100">100</option>
++      <option value="250">250</option>
++      <option value="500" selected>500</option>
++      <option value="1000">1000</option>
+     </select>
+ 
+     <button onclick="BugList.prevPage()">&lt;</button>
+-- 
+2.47.2
+
+
+From b7470488e16cccd3556b41e66400f45cdcb0484b Mon Sep 17 00:00:00 2001
+From: Enrico Seiler <enrico.seiler@hotmail.de>
+Date: Mon, 25 Nov 2024 17:21:10 +0100
+Subject: [PATCH 2/4] misc: add back button
+
+---
+ .../report/output/html/static/index.html                        | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html b/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
+index 732347a9..4c973172 100644
+--- a/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
++++ b/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
+@@ -29,7 +29,7 @@
+   </head>
+   <body>
+   <div class="container">
+-    <a href="statistics.html" class="button">Go To Statistics</a>
++    <a href="statistics.html" class="button">Go To Statistics</a> <a href="../index.html" class="button">Go To Project List</a>
+     <table id="report-list-table">
+       <thead>
+         <tr>
+-- 
+2.47.2
+
+
+From fad0b3ddea038f7206d9dbf518772afaa875f746 Mon Sep 17 00:00:00 2001
+From: Enrico Seiler <enrico.seiler@hotmail.de>
+Date: Fri, 17 Jan 2025 12:52:22 +0100
+Subject: [PATCH 3/4] misc: add last modified
+
+---
+ .../report/output/html/static/index.html                    | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html b/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
+index 4c973172..041c08ea 100644
+--- a/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
++++ b/tools/report-converter/codechecker_report_converter/report/output/html/static/index.html
+@@ -29,7 +29,7 @@
+   </head>
+   <body>
+   <div class="container">
+-    <a href="statistics.html" class="button">Go To Statistics</a> <a href="../index.html" class="button">Go To Project List</a>
++    <a href="statistics.html" class="button">Go To Statistics</a> <a href="../index.html" class="button">Go To Project List</a> <p class="button" id="lastModified"></p>
+     <table id="report-list-table">
+       <thead>
+         <tr>
+@@ -61,5 +61,9 @@
+     <select id="page-number" onchange="BugList.selectPage(this.value)"></select>
+     <button onclick="BugList.nextPage()">&gt;</button>
+   </div>
++  <script>
++    const text = new Date(document.lastModified).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' });
++    document.getElementById("lastModified").innerHTML = text;
++  </script>
+   </body>
+ </html>
+-- 
+2.47.2
+
+
+From 2feb77276d0ae36e9cd3a269e978a0e9abb3da8a Mon Sep 17 00:00:00 2001
+From: Enrico Seiler <enrico.seiler@hotmail.de>
+Date: Wed, 12 Feb 2025 13:53:41 +0100
+Subject: [PATCH 4/4] misc: deduplicate
+
+---
+ .../report/output/html/html.py                         | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/tools/report-converter/codechecker_report_converter/report/output/html/html.py b/tools/report-converter/codechecker_report_converter/report/output/html/html.py
+index b2a80f69..bdd9ddf1 100644
+--- a/tools/report-converter/codechecker_report_converter/report/output/html/html.py
++++ b/tools/report-converter/codechecker_report_converter/report/output/html/html.py
+@@ -324,7 +324,15 @@ class HtmlBuilder:
+             'timestamp': data['report']['timestamp']
+         }, html_report_links)
+ 
+-        self._tag_contents['table_reports'] = json.dumps(list(table_reports))
++        seen = set()
++        unique_data = []
++        for entry in list(table_reports):
++            key = tuple(entry[field] for field in ['file-path', 'line', 'checker-name', 'message'])
++            if key not in seen:
++                seen.add(key)
++                unique_data.append(entry)
++
++        self._tag_contents['table_reports'] = json.dumps(unique_data)
+ 
+         content = self._index.substitute(self._tag_contents)
+         output_path = os.path.join(output_dir, 'index.html')
+-- 
+2.47.2
+
