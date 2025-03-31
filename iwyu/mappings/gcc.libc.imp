@@ -3,10 +3,6 @@
 # SPDX-License-Identifier: CC-BY-4.0
 
 [
-  { "ref": "clang-6.intrinsics.imp" },
-  { "ref": "gcc.libc.imp" },
-  { "ref": "gcc.symbols.imp" },
-  { "ref": "libcxx.imp" },
-  { "ref": "stl.c.headers.imp" },
-  { "ref": "stl.public.imp" },
+  { "include": [ "<bits/types/struct_rusage.h>", "private", "<sys/resource.h>", "public"] },
+  { "include": [ "<bits/types/struct_timeval.h>", "private", "<sys/resource.h>", "public"] },
 ]
