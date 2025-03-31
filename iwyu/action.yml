@@ -6,10 +6,15 @@ name: 'IWYU'
 description: 'Runs include-what-you-use and creates PR.'
 inputs:
   configure_path:
-    description: "The path to run CMake on."
+    description: "The path to run CMake on. Relative to the repository root."
     type: string
     required: false
     default: test/unit
+  additional_mapping:
+    description: "Additional mapping file. Relative to the repository root."
+    type: string
+    required: false
+    default: ""
   token:
     description: "Personal Access Token (PAT)."
     required: true
@@ -22,19 +27,34 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        path: ${{ github.event.repository.name }}
+        token: ${{ inputs.token }}
+
     - name: Input Check
+      id: normalized_paths
       shell: bash
       run: |
         if [[ ! -d "/docker_scripts" ]] || [[ ! -f "/usr/bin/clang" ]] || ! grep -q "Knut Reinert" "/usr/bin/clang"; then
           echo "::error title=Error::Currently only supported on ghcr.io/seqan clang images."
           exit 1
         fi
-
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        path: ${{ github.event.repository.name }}
-        token: ${{ inputs.token }}
+        if [[ -n "${{ inputs.additional_mapping }}" ]]; then
+          NORMALIZED_PATH=$(readlink -m "${{ github.event.repository.name }}/${{ inputs.additional_mapping }}")
+          if [[ ! -f "${NORMALIZED_PATH}" ]]; then
+            echo "::error title=Error::additional_mapping (\"${NORMALIZED_PATH}\") must be a valid file."
+            exit 1
+          fi
+          echo "additional_mapping=${NORMALIZED_PATH}" >> ${GITHUB_OUTPUT}
+        fi
+        NORMALIZED_PATH=$(readlink -m "${{ github.event.repository.name }}/${{ inputs.configure_path }}")
+        if [[ ! -d "${NORMALIZED_PATH}" ]]; then
+          echo "::error title=Error::configure_path (\"${NORMALIZED_PATH}\") must be a valid directory."
+          exit 1
+        fi
+        echo "configure_path=${NORMALIZED_PATH}" >> ${GITHUB_OUTPUT}
 
     - name: Configure Test
       shell: bash
@@ -50,17 +70,20 @@ runs:
         CMAKE_IWYU+="-Xiwyu;--check_also=**/include/${{ github.event.repository.name }}/**.hpp;"
         CMAKE_IWYU+="-Xiwyu;--no_default_mappings;"
         CMAKE_IWYU+="-Xiwyu;--mapping_file=${GITHUB_ACTION_PATH}/mappings/iwyu.imp;"
+        if [[ -n "${{ inputs.additional_mapping }}" ]]; then
+          CMAKE_IWYU+="-Xiwyu;--mapping_file=${{ steps.normalized_paths.outputs.additional_mapping }};"
+        fi
         CMAKE_IWYU+="--stdlib=libc++"
-        cmake ../${{ github.event.repository.name }}/${{ inputs.configure_path }} -DCMAKE_BUILD_TYPE=Debug \
-                                                                                  -DCMAKE_INCLUDE_FLAG_C="-isystem" \
-                                                                                  -DCMAKE_INCLUDE_FLAG_CXX="-isystem" \
-                                                                                  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-                                                                                  -DCMAKE_CXX_INCLUDE_WHAT_YOU_USE="${CMAKE_IWYU}"
+        cmake ${{ steps.normalized_paths.outputs.configure_path }} -DCMAKE_BUILD_TYPE=Debug \
+                                                                   -DCMAKE_INCLUDE_FLAG_C="-isystem" \
+                                                                   -DCMAKE_INCLUDE_FLAG_CXX="-isystem" \
+                                                                   -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+                                                                   -DCMAKE_CXX_INCLUDE_WHAT_YOU_USE="${CMAKE_IWYU}"
 
     - name: Run Test
       working-directory: build
       shell: bash
-      run: make -j 2> out.txt
+      run: make 2> out.txt
 
     - name: Apply changes
       working-directory: build
