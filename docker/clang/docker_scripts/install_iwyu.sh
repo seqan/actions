@@ -15,7 +15,8 @@ declare -A version_map=(
     [17]="0.21"
     [18]="0.22"
     [19]="0.23"
-    [20]="master"
+    [20]="0.24"
+    [21]="master"
 )
 
 IWYU_VERSION=${version_map[${CLANG_VERSION}]}
