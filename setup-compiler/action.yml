@@ -21,13 +21,13 @@ runs:
     run: |
       case "${{ inputs.compiler }}" in
         gcc-latest)
-          COMPILER="gcc-14"
+          COMPILER="gcc-15"
           ;;
         gcc-second-latest)
-          COMPILER="gcc-13"
+          COMPILER="gcc-14"
           ;;
         gcc-third-latest)
-          COMPILER="gcc-12"
+          COMPILER="gcc-13"
           ;;
         *)
           COMPILER="${{ inputs.compiler }}"
