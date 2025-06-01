@@ -21,12 +21,10 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Add label
-      env:
-          GITHUB_TOKEN: ${{ inputs.token }}
-          PR_URL: ${{ github.event.pull_request.html_url }}
+    - name: Error if not a pull request
+      if: github.event_name != 'pull_request' && github.event_name != 'pull_request_target'
       shell: bash
-      run: gh pr edit $PR_URL --add-label "lint"
+      run: echo "::error title=Error::This action can only be run on pull requests."; exit 1
 
     - name: Checkout
       uses: actions/checkout@v4
@@ -35,6 +33,13 @@ runs:
         ref: "refs/pull/${{ github.event.number }}/merge"
         submodules: false
         token: ${{ inputs.token }}
+
+    - name: Add label
+      env:
+          GITHUB_TOKEN: ${{ inputs.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+      shell: bash
+      run: gh pr edit $PR_URL --add-label "lint"
 
     - name: Get changed files
       id: changed_files
