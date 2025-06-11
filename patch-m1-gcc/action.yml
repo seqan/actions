@@ -18,7 +18,7 @@ runs:
         GCC_VERSION="${GCC_STRING:4}"
         if [[ ${GCC_VERSION} -lt 14 ]]; then
           INSTALL_PREFIX="$(brew --cellar gcc@${GCC_VERSION})"
-          GCC_FULL_VERSION="$(brew list --versions gcc@${GCC_VERSION} | cut -d' ' -f2)"
+          GCC_FULL_VERSION="$(brew list --versions gcc@${GCC_VERSION} | rev | cut -d' ' -f1 | rev)"
           FILE="${INSTALL_PREFIX}/${GCC_FULL_VERSION}/lib/gcc/${GCC_VERSION}/gcc/aarch64-apple-darwin23/${GCC_VERSION}/include/arm_acle.h"
           if [[ -f "${FILE}" ]]; then
             ls "${FILE}"
