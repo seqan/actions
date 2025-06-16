@@ -37,8 +37,8 @@ runs:
       id: normalized_paths
       shell: bash
       run: |
-        if [[ ! -d "/docker_scripts" ]] || [[ ! -f "/usr/bin/clang" ]] || ! grep -q "Knut Reinert" "/usr/bin/clang"; then
-          echo "::error title=Error::Currently only supported on ghcr.io/seqan clang images."
+        if [[ ! -d "/docker_scripts" ]] || [[ ! -f "/usr/bin/clang" ]] || ! grep -q "Knut Reinert" "/usr/bin/clang" || ! command -v include_what_you_use &> /dev/null; then
+          echo "::error title=Error::Currently only supported on ghcr.io/seqan/iwyu image."
           exit 1
         fi
         if [[ -n "${{ inputs.additional_mapping }}" ]]; then

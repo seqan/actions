@@ -47,10 +47,12 @@ jobs:
         working-directory: ./docker/${{ matrix.compiler }}
         run: docker compose build &> build.log
 
-      - name: Build CodeChecker image
+      - name: Build CodeChecker/IWYU image
         if: matrix.compiler == 'clang'
-        working-directory: ./docker/codechecker
-        run: docker compose build &> build.log
+        run: |
+          { cd ./docker/codechecker && docker compose build &> build.log; } & \
+          { cd ./docker/iwyu && docker compose build &> build.log; } & \
+          wait
 
       - name: List images
         continue-on-error: true
@@ -80,6 +82,11 @@ jobs:
           if [[ -f ../codechecker/build.log ]]; then
             echo "::group::codechecker"
             cat ../codechecker/build.log
+            echo "::endgroup::"
+          fi
+          if [[ -f ../iwyu/build.log ]]; then
+            echo "::group::iwyu"
+            cat ../iwyu/build.log
             echo "::endgroup::"
           fi
 
@@ -139,10 +146,12 @@ jobs:
         working-directory: ./docker/${{ matrix.compiler }}
         run: docker compose push
 
-      - name: Push CodeChecker image
+      - name: Push CodeChecker/IWYU image
         if: github.repository_owner == 'seqan' && github.event_name != 'pull_request' && matrix.compiler == 'clang'
-        working-directory: ./docker/codechecker
-        run: docker compose push
+        run: |
+          { cd ./docker/codechecker && docker compose push; } & \
+          { cd ./docker/iwyu && docker compose push; } & \
+          wait
 
   update_wiki:
     runs-on: ubuntu-latest

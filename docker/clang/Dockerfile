@@ -13,7 +13,6 @@ COPY docker_scripts /docker_scripts
 RUN /docker_scripts/install_packages.sh ${CLANG_VERSION} && \
     /docker_scripts/install_wrapper.sh ${CLANG_VERSION} && \
     /docker_scripts/install_symlinks.sh ${CLANG_VERSION} && \
-    /docker_scripts/install_iwyu.sh ${CLANG_VERSION} && \
     /docker_scripts/show_versions.sh
 
 ENV CC=clang
