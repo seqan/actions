@@ -40,7 +40,7 @@ if [[ CLANG_VERSION -eq 16 ]]; then
     dpkg-deb -x libomp-16-dev*.deb libomp-16-dev
     dpkg-deb --control libomp-16-dev*.deb libomp-16-dev/DEBIAN
     rm -f libomp-16-dev*.deb
-    sed -i 's@libpython3.11 (>= 3.11.5)@libpython3.12 (>= 3.12.0)@g' libomp-16-dev/DEBIAN/control
+    sed -i 's@libpython3.11 (>= 3.11.5)@libpython3.13 (>= 3.13.0)@g' libomp-16-dev/DEBIAN/control
     dpkg -b libomp-16-dev libomp-16-dev.deb
     apt-get install --yes --no-install-recommends ./libomp-16-dev.deb
     rm -f libomp-16-dev.deb
