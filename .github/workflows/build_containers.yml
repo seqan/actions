@@ -37,7 +37,7 @@ jobs:
     if: github.repository_owner == 'seqan' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build base image
         working-directory: ./docker
@@ -159,7 +159,7 @@ jobs:
     needs: build
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: 'seqan/actions.wiki'
           token: ${{ secrets.SEQAN_ACTIONS_PAT }}
