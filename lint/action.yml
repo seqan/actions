@@ -27,7 +27,7 @@ runs:
       run: echo "::error title=Error::This action can only be run on pull requests."; exit 1
 
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
         ref: "refs/pull/${{ github.event.number }}/merge"
