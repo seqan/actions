@@ -24,6 +24,7 @@ runs:
     run: |
       echo "CCACHE_BASEDIR=${{ github.workspace }}" >> "$GITHUB_ENV"
       echo "CCACHE_DIR=${{ github.workspace }}/.ccache" >> "$GITHUB_ENV"
+      echo "CCACHE_COMPILERCHECK=content" >> "$GITHUB_ENV"
       echo "CCACHE_COMPRESS=true" >> "$GITHUB_ENV"
       echo "CCACHE_COMPRESSLEVEL=12" >> "$GITHUB_ENV"
       echo "CCACHE_MAXSIZE=${{ inputs.ccache_size }}" >> "$GITHUB_ENV"
