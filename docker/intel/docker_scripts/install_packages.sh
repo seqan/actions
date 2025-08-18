@@ -23,5 +23,5 @@ Trusted: yes
 EOM
 
 apt-get update 1>/dev/null
-apt-get install --yes --no-install-recommends intel-oneapi-compiler-dpcpp-cpp-"${INTEL_VERSION}" libstdc++-14-dev 1>/dev/null
+apt-get install --yes --no-install-recommends intel-oneapi-compiler-dpcpp-cpp-"${INTEL_VERSION}" intel-oneapi-compiler-fpga libstdc++-15-dev 1>/dev/null
 rm -rf /var/lib/apt/lists/*
