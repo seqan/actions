@@ -73,9 +73,15 @@ jobs:
             echo "::endgroup::"
           fi
           if [[ -f build.log ]]; then
-            for SERVICE in $(docker compose config --services | sort); do
+            SERVICES=$(docker compose config --services | sort)
+            NUM_SERVICES=$(echo "${SERVICES}" | wc -l)
+            for SERVICE in ${SERVICES}; do
               echo "::group::${SERVICE}"
-              "${GITHUB_WORKSPACE}"/.github/process_docker_compose_log.sh build.log "${SERVICE}"
+              if [[ ${NUM_SERVICES} -eq 1 ]]; then
+                cat build.log
+              else
+                "${GITHUB_WORKSPACE}"/.github/process_docker_compose_log.sh build.log "${SERVICE}"
+              fi
               echo "::endgroup::"
             done
           fi
