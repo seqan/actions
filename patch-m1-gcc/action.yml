@@ -19,11 +19,10 @@ runs:
         if [[ ${GCC_VERSION} -lt 14 ]]; then
           INSTALL_PREFIX="$(brew --cellar gcc@${GCC_VERSION})"
           GCC_FULL_VERSION="$(brew list --versions gcc@${GCC_VERSION} | rev | cut -d' ' -f1 | rev)"
-          FILE="${INSTALL_PREFIX}/${GCC_FULL_VERSION}/lib/gcc/${GCC_VERSION}/gcc/aarch64-apple-darwin23/${GCC_VERSION}/include/arm_acle.h"
-          if [[ -f "${FILE}" ]]; then
+          for FILE in "${INSTALL_PREFIX}/${GCC_FULL_VERSION}/lib/gcc/${GCC_VERSION}/gcc/aarch64-apple-darwin"*"/${GCC_VERSION}/include/arm_acle.h"; do
             ls "${FILE}"
             sed -i '' 's@return __builtin_aarch64_rndrrs (__res);@return __builtin_aarch64_rndrrs ((long unsigned int*)__res);@g' "${FILE}"
             sed -i '' 's@return __builtin_aarch64_rndr (__res);@return __builtin_aarch64_rndr ((long unsigned int*)__res);@g' "${FILE}"
             cat "${FILE}"
-          fi
+          done
         fi
