@@ -30,8 +30,6 @@ services:
     build:
       args:
         CLANG_VERSION: 18
-      tags:
-        - ghcr.io/seqan/clang-third-latest
 
   clang-19:
     image: ghcr.io/seqan/clang-19
@@ -40,7 +38,7 @@ services:
       args:
         CLANG_VERSION: 19
       tags:
-        - ghcr.io/seqan/clang-second-latest
+        - ghcr.io/seqan/clang-third-latest
 
   clang-20:
     image: ghcr.io/seqan/clang-20
@@ -48,5 +46,14 @@ services:
     build:
       args:
         CLANG_VERSION: 20
+      tags:
+        - ghcr.io/seqan/clang-second-latest
+
+  clang-21:
+    image: ghcr.io/seqan/clang-21
+    pull_policy: never
+    build:
+      args:
+        CLANG_VERSION: 21
       tags:
         - ghcr.io/seqan/clang-latest
