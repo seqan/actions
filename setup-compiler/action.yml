@@ -45,6 +45,11 @@ runs:
     with:
       compiler: ${{ steps.install_gcc.outputs.gcc }}
 
+  - name: Workaround Xcode SDK
+    if: contains(inputs.compiler, 'clang') && runner.os == 'macOS'
+    shell: bash
+    run: sudo xcode-select -s /Library/Developer/CommandLineTools/
+
   - name: Install Clang
     if: contains(inputs.compiler, 'clang')
     shell: bash
