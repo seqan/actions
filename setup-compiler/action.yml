@@ -48,7 +48,9 @@ runs:
   - name: Workaround Xcode SDK
     if: contains(inputs.compiler, 'clang') && runner.os == 'macOS'
     shell: bash
-    run: sudo xcode-select -s /Library/Developer/CommandLineTools/
+    run: |
+      sudo xcode-select -s /Library/Developer/CommandLineTools/
+      echo "SDKROOT=$(xcrun --sdk macosx --show-sdk-path)" >> "$GITHUB_ENV"
 
   - name: Install Clang
     if: contains(inputs.compiler, 'clang')
