@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: license
-  cancel-in-progress: false
+  group: license-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'push' }}
 
 env:
   TZ: Europe/Berlin

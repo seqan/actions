@@ -14,8 +14,8 @@ on:
       - main
 
 concurrency:
-  group: report
-  cancel-in-progress: false
+  group: report-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 env:
   TZ: Europe/Berlin
