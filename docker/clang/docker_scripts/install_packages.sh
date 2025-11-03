@@ -19,7 +19,7 @@ Signed-By: /etc/apt/trusted.gpg.d/apt.llvm.org.asc
 EOM
 
 apt-get update 1>/dev/null
-apt-get install --yes --no-install-recommends \
+apt-get install --yes --no-install-recommends --target-release llvm-toolchain-"${CLANG_VERSION}" \
     clang-"${CLANG_VERSION}" \
     clang-format-"${CLANG_VERSION}" \
     clang-tidy-"${CLANG_VERSION}" \
