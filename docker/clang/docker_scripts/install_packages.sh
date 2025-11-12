@@ -10,6 +10,12 @@ CLANG_VERSION=$1
 
 wget --quiet --retry-connrefused --output-document /etc/apt/trusted.gpg.d/apt.llvm.org.asc https://apt.llvm.org/llvm-snapshot.gpg.key
 
+cat > /etc/apt/preferences.d/llvm-pin <<- EOM
+Package: *
+Pin: origin apt.llvm.org
+Pin-Priority: 999
+EOM
+
 cat > /etc/apt/sources.list.d/llvm.sources <<- EOM
 Types: deb
 URIs: https://apt.llvm.org/unstable/
@@ -19,7 +25,7 @@ Signed-By: /etc/apt/trusted.gpg.d/apt.llvm.org.asc
 EOM
 
 apt-get update 1>/dev/null
-apt-get install --yes --no-install-recommends --target-release llvm-toolchain-"${CLANG_VERSION}" \
+apt-get install --yes --no-install-recommends \
     clang-"${CLANG_VERSION}" \
     clang-format-"${CLANG_VERSION}" \
     clang-tidy-"${CLANG_VERSION}" \
@@ -32,21 +38,29 @@ apt-get install --yes --no-install-recommends --target-release llvm-toolchain-"$
     llvm-"${CLANG_VERSION}"-dev \
     1>/dev/null
 
-# Overwrite libpython3.11 dependency for libomp-16-dev.
-if [[ CLANG_VERSION -eq 16 ]]; then
+# Detect available libpython version
+PYTHON_VERSION=$(apt-cache policy libpython3-dev | grep Candidate | grep -oP '3\.\d+')
+
+# Try to install libomp normally
+if ! apt-get install --yes --no-install-recommends libomp-"${CLANG_VERSION}"-dev 1>/dev/null 2>&1; then
+    echo "libomp-${CLANG_VERSION}-dev installation failed, applying libpython dependency fix..."
+
     mkdir -p /tmp/libomp
     cd /tmp/libomp
-    apt-get download libomp-16-dev
-    dpkg-deb -x libomp-16-dev*.deb libomp-16-dev
-    dpkg-deb --control libomp-16-dev*.deb libomp-16-dev/DEBIAN
-    rm -f libomp-16-dev*.deb
-    sed -i 's@libpython3.11 (>= 3.11.5)@libpython3.13 (>= 3.13.0)@g' libomp-16-dev/DEBIAN/control
-    dpkg -b libomp-16-dev libomp-16-dev.deb
-    apt-get install --yes --no-install-recommends ./libomp-16-dev.deb
-    rm -f libomp-16-dev.deb
+    apt-get download libomp-"${CLANG_VERSION}"-dev
+    dpkg-deb -x libomp-"${CLANG_VERSION}"-dev*.deb libomp-"${CLANG_VERSION}"-dev
+    dpkg-deb --control libomp-"${CLANG_VERSION}"-dev*.deb libomp-"${CLANG_VERSION}"-dev/DEBIAN
+    rm -f libomp-"${CLANG_VERSION}"-dev*.deb
+
+    # Replace any libpython3.X dependency with the available version
+    sed -i -E "s@libpython3\.[0-9]+[a-z0-9]* \([^)]+\)@libpython${PYTHON_VERSION} (>= ${PYTHON_VERSION}.0)@g" \
+        libomp-"${CLANG_VERSION}"-dev/DEBIAN/control
+
+    dpkg -b libomp-"${CLANG_VERSION}"-dev libomp-"${CLANG_VERSION}"-dev.deb
+    apt-get install --yes --no-install-recommends ./libomp-"${CLANG_VERSION}"-dev.deb
+    rm -f libomp-"${CLANG_VERSION}"-dev.deb
+    cd /
     rm -fdr /tmp/libomp
-else
-    apt-get install --yes --no-install-recommends libomp-"${CLANG_VERSION}"-dev 1>/dev/null
 fi
 
 rm -rf /var/lib/apt/lists/*
