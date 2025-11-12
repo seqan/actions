@@ -10,6 +10,12 @@ CLANG_VERSION=$1
 
 wget --quiet --retry-connrefused --output-document /etc/apt/trusted.gpg.d/apt.llvm.org.asc https://apt.llvm.org/llvm-snapshot.gpg.key
 
+cat > /etc/apt/preferences.d/llvm-pin <<- EOM
+Package: *
+Pin: origin apt.llvm.org
+Pin-Priority: 999
+EOM
+
 cat > /etc/apt/sources.list.d/llvm.sources <<- EOM
 Types: deb
 URIs: https://apt.llvm.org/unstable/
@@ -19,7 +25,7 @@ Signed-By: /etc/apt/trusted.gpg.d/apt.llvm.org.asc
 EOM
 
 apt-get update 1>/dev/null
-apt-get install --yes --no-install-recommends --target-release llvm-toolchain-"${CLANG_VERSION}" \
+apt-get install --yes --no-install-recommends \
     clang-"${CLANG_VERSION}" \
     clang-format-"${CLANG_VERSION}" \
     clang-tidy-"${CLANG_VERSION}" \
