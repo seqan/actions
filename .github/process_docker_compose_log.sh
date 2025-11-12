@@ -13,8 +13,28 @@ OUTPUT_FILE=${3:-/dev/stdout}
 extract_by_prefix(){
     awk "
         BEGIN { in_block = 0 }
-        /^#[0-9]+ \[${PREFIX}/ { in_block = 1 }
-        /^$/ { if (in_block) { print ""; in_block = 0 } }
+
+        # Stop if we encounter an error detail line for a different service
+        /^ > \[/ && !/^ > \[${PREFIX}/ {
+            in_block = 0
+            next
+        }
+
+        # Start capturing when we match our service
+        /^#[0-9]+ \[${PREFIX}/ {
+            in_block = 1
+        }
+
+        # Stop at empty lines
+        /^$/ {
+            if (in_block) {
+                print \"\"
+                in_block = 0
+            }
+            next
+        }
+
+        # Print if in block
         { if (in_block) print }
         " "${INPUT_FILE}"
 }
