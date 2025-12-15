@@ -36,7 +36,7 @@ runs:
 
     - name: Load ccache
       if: steps.directories.outputs.ccache != ''
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ steps.directories.outputs.ccache }}
         key: ccache-${{ runner.os }}-${{ github.workflow }}-${{ matrix.compiler || matrix.name || join(matrix.*, ' - ') || github.job }}-${{ github.ref }}-${{ github.run_id }}
@@ -46,7 +46,7 @@ runs:
 
     - name: Load dependency cache
       if: steps.directories.outputs.cpm != '' && steps.directories.outputs.cpm_lock != ''
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ steps.directories.outputs.cpm }}
         key: cpm-${{ hashfiles(steps.directories.outputs.cpm_lock) }}
