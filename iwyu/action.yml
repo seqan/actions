@@ -124,7 +124,7 @@ runs:
 
     - name: Open PR
       if: ${{ steps.changed_files.outputs.cpp_list }}
-      uses: peter-evans/create-pull-request@v7
+      uses: peter-evans/create-pull-request@v8
       with:
         token: ${{ inputs.token }}
         path: ${{ github.event.repository.name }}
