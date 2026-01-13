@@ -68,7 +68,7 @@ runs:
         cp -r ${{ inputs.source_path_user_doc }}/* preview/
 
     - name: Deploy Preview
-      uses: burnett01/rsync-deployments@8.0.2
+      uses: burnett01/rsync-deployments@8.0.3
       with:
         switches: --recursive --delete --timeout=60 --omit-dir-times --mkpath
         path: 'preview/'
