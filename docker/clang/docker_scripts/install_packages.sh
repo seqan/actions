@@ -24,6 +24,21 @@ Components: main
 Signed-By: /etc/apt/trusted.gpg.d/apt.llvm.org.asc
 EOM
 
+# Warning: OpenPGP signature verification failed: https://apt.llvm.org/unstable llvm-toolchain-21 InRelease:
+#  Sub-process /usr/bin/sqv returned an error code (1), error message is:
+#   Signing key on 6084F3CF814B57C1CF12EFD515CF4D18AF4F7421 is not bound:
+#    No binding signature at time 2025-12-21T23:13:57Z because:
+#     Policy rejected non-revocation signature (PositiveCertification) requiring second pre-image resistance because:
+#      SHA1 is not considered secure since 2026-02-01T00:00:00Z
+# Error: The repository 'https://apt.llvm.org/unstable llvm-toolchain-21 InRelease' is not signed.
+#
+# https://docs.rs/sequoia-policy-config/latest/sequoia_policy_config/#cutoff-times
+mkdir -p /etc/crypto-policies/back-ends
+cat > /etc/crypto-policies/back-ends/sequoia.config <<- EOM
+[hash_algorithms]
+sha1 = "always"
+EOM
+
 apt-get update 1>/dev/null
 apt-get install --yes --no-install-recommends \
     clang-"${CLANG_VERSION}" \
