@@ -30,7 +30,7 @@ runs:
       run: echo "::error title=Error::This action can only be run on pull requests."; exit 1
 
     - name: Delete Preview
-      uses: appleboy/ssh-action@v1.2.4
+      uses: appleboy/ssh-action@v1.2.5
       with:
         host: ${{ inputs.deploy_host }}
         username: ${{ inputs.deploy_user }}
