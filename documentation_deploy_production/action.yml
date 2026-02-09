@@ -67,7 +67,7 @@ runs:
 
     - name: Deploy User documentation
       if: ${{ inputs.source_path_user_doc != '' }}
-      uses: burnett01/rsync-deployments@8.0.3
+      uses: burnett01/rsync-deployments@8.0.4
       with:
         switches: --recursive --delete --timeout=60 --omit-dir-times --mkpath
         path: ${{ inputs.source_path_user_doc }}
@@ -78,7 +78,7 @@ runs:
 
     - name: Deploy Developer documentation
       if: ${{ inputs.source_path_developer_doc != '' }}
-      uses: burnett01/rsync-deployments@8.0.3
+      uses: burnett01/rsync-deployments@8.0.4
       with:
         switches: --recursive --delete --timeout=60 --omit-dir-times --mkpath
         path: ${{ inputs.source_path_developer_doc }}
