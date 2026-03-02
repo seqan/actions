@@ -128,10 +128,10 @@ runs:
       with:
         token: ${{ inputs.token }}
         path: ${{ github.event.repository.name }}
-        commit-message: "[MISC] IWYU"
+        commit-message: "chore(lint): include what you use"
         committer: "seqan-actions[bot] <seqan-actions@users.noreply.github.com>"
         author: "seqan-actions[bot] <seqan-actions@users.noreply.github.com>"
         branch: "actions/iwyu"
         delete-branch: true
-        title: "[MISC] IWYU"
+        title: "chore(lint): include what you use"
         body: "Auto-generated include-what-you-use changes"
