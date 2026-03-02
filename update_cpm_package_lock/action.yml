@@ -80,12 +80,12 @@ runs:
       uses: peter-evans/create-pull-request@v8
       with:
         token: ${{ inputs.token }}
-        commit-message: "[INFRA] Update CPM Packages"
+        commit-message: "chore(deps): update CPM packages"
         committer: "seqan-actions[bot] <seqan-actions@users.noreply.github.com>"
         author: "seqan-actions[bot] <seqan-actions@users.noreply.github.com>"
         branch: "actions/update_cpm_package_lock"
         delete-branch: true
-        title: "[INFRA] Update CPM Packages"
+        title: "chore(deps): update CPM packages"
         body: ""
         path: repo
         add-paths: |
