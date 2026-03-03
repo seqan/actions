@@ -17,11 +17,11 @@ fi
 
 # Download the SDE tarball
 # Update the following variables if the SDE version changes
-DIR_PATH="850782"
-SDE_VERSION="9.53.0"
-SDE_DATE="2025-03-16"
+DIR_PATH="913594"
+SDE_VERSION="10.7.0"
+SDE_DATE="2026-02-18"
 
-# Example: https://downloadmirror.intel.com/850782/sde-external-9.53.0-2025-03-16-lin.tar.xz
+# Example: https://downloadmirror.intel.com/913594/sde-external-10.7.0-2026-02-18-lin.tar.xz
 FULL_URL="https://downloadmirror.intel.com/${DIR_PATH}/sde-external-${SDE_VERSION}-${SDE_DATE}-lin.tar.xz"
 
 wget --quiet --retry-connrefused --output-document "${SDE_TARGET_FILE}" "${FULL_URL}"
