@@ -68,7 +68,7 @@ runs:
 
     - name: Import GPG key
       if: inputs.gpg_key != '' && inputs.gpg_passphrase != ''
-      uses: crazy-max/ghaction-import-gpg@v6
+      uses: crazy-max/ghaction-import-gpg@v7
       with:
         workdir: repo
         gpg_private_key: ${{ inputs.gpg_key }}
