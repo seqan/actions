@@ -114,7 +114,7 @@ runs:
 
     - name: Import GPG key
       if: ${{ steps.changed_files.outputs.cpp_list }}
-      uses: crazy-max/ghaction-import-gpg@v6
+      uses: crazy-max/ghaction-import-gpg@v7
       with:
         gpg_private_key: ${{ inputs.gpg_key }}
         passphrase: ${{ inputs.gpg_passphrase }}
