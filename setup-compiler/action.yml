@@ -58,13 +58,13 @@ runs:
     run: |
       case "${{ inputs.compiler }}" in
         clang-latest)
-          COMPILER="clang-21"
+          COMPILER="clang-22"
           ;;
         clang-second-latest)
-          COMPILER="clang-20"
+          COMPILER="clang-21"
           ;;
         clang-third-latest)
-          COMPILER="clang-19"
+          COMPILER="clang-20"
           ;;
         *)
           COMPILER="${{ inputs.compiler }}"

@@ -8,7 +8,7 @@ inputs:
   clang_format:
     description: "clang-format version to use."
     required: false
-    default: 15
+    default: 22
   token:
     description: "Personal Access Token (PAT)."
     required: true
@@ -62,13 +62,19 @@ runs:
         git fetch fork ${{ github.event.pull_request.head.ref }}
         git checkout --force --track fork/${{ github.event.pull_request.head.ref }}
 
+    - name: Install Run clang-format
+      if: ${{ steps.changed_files.outputs.cpp_list }}
+      shell:: bash
+      run: |
+        wget --quiet --retry-connrefused --output-document "/tmp/clang-format" \
+          "https://github.com/cpp-linter/clang-tools-static-binaries/releases/latest/download/clang-format-${{ inputs.clang_format }}_linux-amd64"
+        chmod +x /tmp/clang-format
+
     - name: Run clang-format
       if: ${{ steps.changed_files.outputs.cpp_list }}
-      uses: eseiler/clang-format-lint-action@master
-      with:
-        source: ${{ steps.changed_files.outputs.cpp_list }}
-        clangFormatVersion: ${{ inputs.clang_format }}
-        inplace: True
+      shell: bash
+      run: |
+        /tmp/clang-format --style=file -i ${{ steps.changed_files.outputs.cpp_list }}
 
     - name: Run cmake-format
       if: ${{ steps.changed_files.outputs.cmake_list }}
