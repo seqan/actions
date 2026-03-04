@@ -63,7 +63,7 @@ runs:
       run: |
         echo "::group::Configure tests"
         mkdir build && cd build
-        cmake ${{ inputs.configure_path }} -DCMAKE_CXX_COMPILER=clang++-20 \
+        cmake ${{ inputs.configure_path }} -DCMAKE_CXX_COMPILER=clang++-22 \
                                            -DCMAKE_CXX_FLAGS="-stdlib=libc++" \
                                            -DCMAKE_BUILD_TYPE=Debug \
                                            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
