@@ -64,7 +64,7 @@ runs:
 
     - name: Install Run clang-format
       if: ${{ steps.changed_files.outputs.cpp_list }}
-      shell:: bash
+      shell: bash
       run: |
         wget --quiet --retry-connrefused --output-document "/tmp/clang-format" \
           "https://github.com/cpp-linter/clang-tools-static-binaries/releases/latest/download/clang-format-${{ inputs.clang_format }}_linux-amd64"
