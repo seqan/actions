@@ -73,6 +73,7 @@ runs:
         if ls ../.github/config/codechecker.skip* &>/dev/null; then
           sed -i 's@\${GITHUB_WORKSPACE}@'"${GITHUB_WORKSPACE}"'@g' ../.github/config/codechecker.skip*
         fi
+        sed -i 's@disable=clang-diagnostic-implicit-int-conversion@disable=checker:clang-diagnostic-implicit-int-conversion@g' ../.github/config/codechecker.yml
         CodeChecker analyze --config ../.github/config/codechecker.yml \
                             --output=./results \
                             --jobs=$(nproc) \
