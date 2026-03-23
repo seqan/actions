@@ -188,7 +188,7 @@ jobs:
           git_commit_gpgsign: true
 
       - name: Commit changes
-        uses: EndBug/add-and-commit@v9
+        uses: EndBug/add-and-commit@v10
         with:
           author_name: seqan-actions[bot]
           author_email: seqan-actions@users.noreply.github.com
