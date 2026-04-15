@@ -150,6 +150,7 @@ foreach (PACKAGE ${PACKAGE_LIST})
     set (BRANCH "")
     set (TAG_PREFIX "")
     set (TAG_IS_COMMIT FALSE)
+    set (LATEST_TAG_ALLOWED FALSE)
 
     if (PACKAGE MATCHES "GITHUB_REPOSITORY +([^ \t\r\n\)]+)")
         set (REPO "${CMAKE_MATCH_1}")
@@ -158,8 +159,11 @@ foreach (PACKAGE ${PACKAGE_LIST})
             set (TAG "${CMAKE_MATCH_1}")
             set (BRANCH "${CMAKE_MATCH_3}")
         endif ()
-        if (PACKAGE MATCHES "VERSION +([^ \t\r\n\)]+)")
+        if (PACKAGE MATCHES "VERSION +([^ \t\r\n\)]+)[^#\r\n]*([ #]*)([^ \t\r\n\)]*)")
             set (VERSION "${CMAKE_MATCH_1}")
+            if (CMAKE_MATCH_3 MATCHES "latest")
+                set (LATEST_TAG_ALLOWED TRUE)
+            endif ()
         endif ()
 
         check_if_commit (${REPO} "${TAG}" TAG_IS_COMMIT)
@@ -203,9 +207,23 @@ foreach (PACKAGE ${PACKAGE_LIST})
                          ERROR_STRIP_TRAILING_WHITESPACE
                          RESULT_VARIABLE RETURN_CODE)
         if (RETURN_CODE)
-            print (WARNING "Skipping ${REPO}\n"
-                           "     Failed to query latest release: ${ERROR_MESSAGE}")
-            continue ()
+            if (LATEST_TAG_ALLOWED)
+                 execute_process (COMMAND "gh" "api" "/repos/${REPO}/tags" "-q" ".[0].name"
+                         OUTPUT_VARIABLE LATEST_RELEASE
+                         OUTPUT_STRIP_TRAILING_WHITESPACE
+                         ERROR_VARIABLE ERROR_MESSAGE
+                         ERROR_STRIP_TRAILING_WHITESPACE
+                         RESULT_VARIABLE RETURN_CODE)
+                if (RETURN_CODE)
+                    print (WARNING "Skipping ${REPO}\n"
+                                   "     Failed to query latest tag: ${ERROR_MESSAGE}")
+                    continue ()
+                endif ()
+            else ()
+                print (WARNING "Skipping ${REPO}\n"
+                               "     Failed to query latest release: ${ERROR_MESSAGE}")
+                continue ()
+            endif ()
         endif ()
         if (LATEST_RELEASE MATCHES "[vV]*(.*)")
             set (LATEST_RELEASE "${CMAKE_MATCH_1}")
