@@ -26,4 +26,5 @@ tar xf "${SDE_ARCHIVE}" -C "${SDE_EXTRACTION_PATH}" --strip-components=1
 rm "${SDE_ARCHIVE}"
 
 # Add the SDE version to the versions file
-echo -e "intel-sde*\t$(sde --version | grep -oP 'Version:\s*\K[0-9.]+')" | tee -a /manually_installed_packages.version /installed_packages.version > /dev/null
+SDE_VERSION=$("${SDE_EXTRACTION_PATH}"/sde --version | grep -oP 'Version:\s*\K[0-9.]+')
+echo -e "intel-sde*\t${SDE_VERSION}" | tee -a /manually_installed_packages.version /installed_packages.version > /dev/null
