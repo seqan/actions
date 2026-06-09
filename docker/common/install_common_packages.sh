@@ -15,6 +15,7 @@ apt-get install --yes --no-install-recommends --no-upgrade \
     gcovr \
     gh \
     git \
+    git-lfs \
     gpg \
     gpg-agent \
     libbz2-dev \
