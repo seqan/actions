@@ -56,7 +56,7 @@ runs:
         echo "::endgroup::"
 
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Run CodeChecker
       shell: bash
