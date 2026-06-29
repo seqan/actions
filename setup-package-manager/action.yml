@@ -14,7 +14,7 @@ runs:
 
   - name: Setup Homebrew
     if: runner.os == 'macOS' && env.SEQAN_ACTIONS_SETUP_PACKAGE_MANAGER_RAN != 'true'
-    uses: Homebrew/actions/setup-homebrew@master
+    uses: Homebrew/actions/setup-homebrew@main
 
   - name: Configure Homebrew
     if: runner.os == 'macOS' && env.SEQAN_ACTIONS_SETUP_PACKAGE_MANAGER_RAN != 'true'
