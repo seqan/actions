@@ -36,7 +36,16 @@ runs:
       install ${COMPILER}
       echo "CC=${COMPILER}" >> "$GITHUB_ENV"
       echo "CXX=$(echo ${COMPILER} | sed 's/gcc/g++/')" >> "$GITHUB_ENV"
-      echo "SDKROOT=$(${COMPILER} -v 2>&1 | sed -n 's@.*--with-sysroot=\([^ ]*\).*@\1@p')" >> "$GITHUB_ENV"
+      if [[ "${RUNNER_OS}" == "macOS" && "${COMPILER}" == "gcc-14" ]]; then
+        MACOS_VERSION="$(sw_vers -productVersion)"
+        if [[ "${MACOS_VERSION}" == 26.* ]]; then
+          echo "Skipping SDKROOT export for ${COMPILER} on macOS ${MACOS_VERSION}"
+        else
+          echo "SDKROOT=$(${COMPILER} -v 2>&1 | sed -n 's@.*--with-sysroot=\([^ ]*\).*@\1@p')" >> "$GITHUB_ENV"
+        fi
+      else
+        echo "SDKROOT=$(${COMPILER} -v 2>&1 | sed -n 's@.*--with-sysroot=\([^ ]*\).*@\1@p')" >> "$GITHUB_ENV"
+      fi
       echo "gcc=${COMPILER}" >> $GITHUB_OUTPUT
 
   - name: Patch M1 GCC
