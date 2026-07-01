@@ -39,7 +39,12 @@ runs:
       if [[ "${RUNNER_OS}" == "macOS" && "${COMPILER}" == "gcc-14" ]]; then
         MACOS_VERSION="$(sw_vers -productVersion)"
         if [[ "${MACOS_VERSION}" == 26.* ]]; then
-          echo "Skipping SDKROOT export for ${COMPILER} on macOS ${MACOS_VERSION}"
+          SDKROOT_PATH="/Library/Developer/CommandLineTools/SDKs/MacOSX15.sdk"
+          if [[ -d "${SDKROOT_PATH}" ]]; then
+            echo "SDKROOT=${SDKROOT_PATH}" >> "$GITHUB_ENV"
+          else
+            echo "Skipping SDKROOT export for ${COMPILER} on macOS ${MACOS_VERSION}"
+          fi
         else
           echo "SDKROOT=$(${COMPILER} -v 2>&1 | sed -n 's@.*--with-sysroot=\([^ ]*\).*@\1@p')" >> "$GITHUB_ENV"
         fi
