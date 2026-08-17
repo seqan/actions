@@ -20,6 +20,7 @@ apt-get install --yes --no-install-recommends --no-upgrade \
     libbz2-dev \
     libc6-i386 \
     make \
+    ninja-build \
     patch \
     wget \
     zlib1g-dev \
