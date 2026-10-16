@@ -42,13 +42,13 @@ runs:
           SDKROOT_PATH="/Library/Developer/CommandLineTools/SDKs/MacOSX15.sdk"
           if [[ -d "${SDKROOT_PATH}" ]]; then
             echo "SDKROOT=${SDKROOT_PATH}" >> "$GITHUB_ENV"
+          elif [[ -d "/Applications/Xcode_26.3.app/Contents/Developer" ]]; then
+            # Newer SDKs contain Mach headers that GCC 14 cannot compile.
+            SDKROOT_PATH=$(env -u SDKROOT DEVELOPER_DIR=/Applications/Xcode_26.3.app/Contents/Developer \
+              xcrun --sdk macosx --show-sdk-path)
+            echo "SDKROOT=${SDKROOT_PATH}" >> "$GITHUB_ENV"
           else
-            SDKROOT_PATH="/Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk"
-            if [[ -d "${SDKROOT_PATH}" ]]; then
-              echo "SDKROOT=${SDKROOT_PATH}" >> "$GITHUB_ENV"
-            else
-              echo "Skipping SDKROOT export for ${COMPILER} on macOS ${MACOS_VERSION}"
-            fi
+            echo "Skipping SDKROOT export for ${COMPILER} on macOS ${MACOS_VERSION}"
           fi
         else
           echo "SDKROOT=$(${COMPILER} -v 2>&1 | sed -n 's@.*--with-sysroot=\([^ ]*\).*@\1@p')" >> "$GITHUB_ENV"
