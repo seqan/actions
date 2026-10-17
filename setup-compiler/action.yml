@@ -18,29 +18,7 @@ runs:
     if: contains(inputs.compiler, 'gcc')
     id: install_gcc
     shell: bash
-    run: |
-      case "${{ inputs.compiler }}" in
-        gcc-latest)
-          COMPILER="gcc-16"
-          ;;
-        gcc-second-latest)
-          COMPILER="gcc-15"
-          ;;
-        gcc-third-latest)
-          COMPILER="gcc-14"
-          ;;
-        *)
-          COMPILER="${{ inputs.compiler }}"
-          ;;
-      esac
-      install ${COMPILER}
-      echo "CC=${COMPILER}" >> "$GITHUB_ENV"
-      echo "CXX=$(echo ${COMPILER} | sed 's/gcc/g++/')" >> "$GITHUB_ENV"
-      if [[ "${RUNNER_OS}" != "macOS" ]]; then
-        SDKROOT=${SDKROOT:-$(${COMPILER} -v 2>&1 | sed -n 's@.*--with-sysroot=\([^ ]*\).*@\1@p')}
-        echo "SDKROOT=${SDKROOT}" >> "$GITHUB_ENV"
-      fi
-      echo "gcc=${COMPILER}" >> $GITHUB_OUTPUT
+    run: ${GITHUB_ACTION_PATH}/install_gcc.sh ${{ inputs.compiler }}
 
   - name: Patch M1 GCC
     if: contains(inputs.compiler, 'gcc') && runner.os == 'macOS'
@@ -51,131 +29,17 @@ runs:
   - name: Install Clang
     if: contains(inputs.compiler, 'clang')
     shell: bash
-    run: |
-      case "${{ inputs.compiler }}" in
-        clang-latest)
-          COMPILER="clang-23"
-          ;;
-        clang-second-latest)
-          COMPILER="clang-22"
-          ;;
-        clang-third-latest)
-          COMPILER="clang-21"
-          ;;
-        *)
-          COMPILER="${{ inputs.compiler }}"
-          ;;
-      esac
-      install ${COMPILER}
-      echo "CC=${COMPILER}" >> "$GITHUB_ENV"
-      echo "CXX=$(echo ${COMPILER} | sed 's/clang/clang++/')" >> "$GITHUB_ENV"
-      if [ "${RUNNER_OS}" == "Linux" ]; then
-        CLANG=${COMPILER}
-        CLANG_VERSION=${CLANG:6}
-        install lld-${CLANG_VERSION} libc++-${CLANG_VERSION}-dev libc++abi-${CLANG_VERSION}-dev libomp-${CLANG_VERSION}-dev libclang-${CLANG_VERSION}-dev
-        echo "OMP_TOOL_LIBRARIES=/usr/lib/llvm-${CLANG_VERSION}/lib/libarcher.so" >> "$GITHUB_ENV"
-        sudo ln -fs /usr/bin/llvm-as-${CLANG_VERSION} /usr/bin/as
-        sudo ln -fs /usr/bin/llvm-ar-${CLANG_VERSION} /usr/bin/ar
-        sudo ln -fs /usr/bin/ld.lld-${CLANG_VERSION} /usr/bin/ld
-        sudo ln -fs /usr/bin/llvm-nm-${CLANG_VERSION} /usr/bin/nm
-        sudo ln -fs /usr/bin/llvm-ranlib-${CLANG_VERSION} /usr/bin/ranlib
-        if [[ ! -e "/usr/lib/llvm-${CLANG_VERSION}/lib/libclang-${CLANG_VERSION}.so.1" ]]; then
-          sudo ln -fs /usr/lib/llvm-${CLANG_VERSION}/lib/libclang-${CLANG_VERSION}.so /usr/lib/llvm-${CLANG_VERSION}/lib/libclang-${CLANG_VERSION}.so.1
-        fi
-      fi
-      if [ "${RUNNER_OS}" == "macOS" ]; then
-        CLANG=${COMPILER}
-        CLANG_VERSION=${CLANG:6}
-        INSTALL_PREFIX=$(brew --prefix llvm@${CLANG_VERSION})
-        # https://github.com/llvm/llvm-project/issues/92121
-        if [[ CLANG_VERSION -gt 17 ]]; then
-          if [[ CLANG_VERSION -gt 18 ]]; then
-            echo "LDFLAGS=-L${INSTALL_PREFIX}/lib/c++ -L${INSTALL_PREFIX}/lib/unwind -lunwind -Wl,-rpath,${INSTALL_PREFIX}/lib/c++ -Wl,-rpath,${INSTALL_PREFIX}/lib/unwind" >> "$GITHUB_ENV"
-          else
-            echo "LDFLAGS=-L${INSTALL_PREFIX}/lib/c++ -L${INSTALL_PREFIX}/lib/ -lunwind -Wl,-rpath,${INSTALL_PREFIX}/lib/c++ -Wl,-rpath,${INSTALL_PREFIX}/lib/" >> "$GITHUB_ENV"
-          fi
-        else
-          echo "LDFLAGS=-L${INSTALL_PREFIX}/lib/c++ -Wl,-rpath,${INSTALL_PREFIX}/lib/c++" >> "$GITHUB_ENV"
-        fi
-        sudo ln -fs ${INSTALL_PREFIX}/bin/clang++ ${INSTALL_PREFIX}/bin/clang++-${CLANG_VERSION}
-        sudo ln -fs ${INSTALL_PREFIX}/bin/llvm-ar ${INSTALL_PREFIX}/bin/ar
-        sudo ln -fs ${INSTALL_PREFIX}/bin/llvm-as ${INSTALL_PREFIX}/bin/as
-        sudo ln -fs ${INSTALL_PREFIX}/bin/llvm-nm ${INSTALL_PREFIX}/bin/nm
-        sudo ln -fs ${INSTALL_PREFIX}/bin/llvm-ranlib ${INSTALL_PREFIX}/bin/ranlib
-        echo "${INSTALL_PREFIX}/bin" >> "${GITHUB_PATH}"
-        install lld
-        install libomp
-        LIBOMP_PREFIX=$(brew --prefix libomp)
-        echo "OpenMP_ROOT=${LIBOMP_PREFIX}" >> "$GITHUB_ENV"
-      fi
+    run: ${GITHUB_ACTION_PATH}/install_clang.sh ${{ inputs.compiler }}
 
   - name: Select macOS SDK
-    if: runner.os == 'macOS' && (contains(inputs.compiler, 'gcc') || contains(inputs.compiler, 'clang'))
+    if: runner.os == 'macOS'
     shell: bash
-    run: |
-      if [[ -n "${SDKROOT:-}" ]]; then
-        echo "SDKROOT=$SDKROOT" >> "$GITHUB_ENV"
-        exit 0
-      fi
-      probe=$(mktemp -d "$RUNNER_TEMP/compiler-sdk.XXXXXX")
-      trap 'rm -rf "$probe"' EXIT
-      read -r -a flags <<< "-x c++ ${LDFLAGS:-}"
-      for sdk in "$(xcrun --sdk macosx --show-sdk-path 2>/dev/null || true)" \
-                 "$("$CC" -print-sysroot 2>/dev/null || true)" \
-                 /Library/Developer/CommandLineTools/SDKs/MacOSX*.sdk \
-                 /Applications/*.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX*.sdk; do
-        [[ -d "$sdk" ]] || continue
-        # Check both Mach-header compatibility and linking against the SDK.
-        if "$CXX" -isysroot "$sdk" "${flags[@]}" -o "$probe/check" - > "$probe/log" 2>&1 <<'CPP'
-      #include <mach/mach.h>
-      #include <sys/sysctl.h>
-      #include <vector>
-      int main() { return 0; }
-      CPP
-        then
-          echo "SDKROOT=$sdk" >> "$GITHUB_ENV"
-          echo "Selected SDK: $sdk"
-          exit 0
-        fi
-      done
-      [[ ! -f "$probe/log" ]] || cat "$probe/log"
-      echo "::error::No installed macOS SDK passed the $CXX compile/link probe. Install a compatible SDK or choose another compiler; set SDKROOT to select an SDK explicitly."
-      exit 1
+    run: ${GITHUB_ACTION_PATH}/select_sdk.sh
 
   - name: Install Intel
     if: contains(inputs.compiler, 'intel')
     shell: bash
-    run: |
-      install $(echo ${{ inputs.compiler }} | sed 's/intel/intel-oneapi-compiler-dpcpp-cpp/') libstdc++-13-dev
-      source /opt/intel/oneapi/setvars.sh
-      sudo ln -fs $(icpx --print-prog-name=llvm-ar) /usr/bin/ar
-      sudo ln -fs $(icpx --print-prog-name=lld) /usr/bin/ld
-      sudo ln -fs $(icpx --print-prog-name=llvm-nm) /usr/bin/nm
-      sudo ln -fs $(icpx --print-prog-name=llvm-ranlib) /usr/bin/ranlib
-      echo "CC=icx" >> "${GITHUB_ENV}"
-      echo "CXX=icpx" >> "${GITHUB_ENV}"
-      echo "${PATH}" > "${GITHUB_PATH}"
-      echo "TBBROOT=${TBBROOT}" >> "${GITHUB_ENV}"
-      echo "ONEAPI_ROOT=${ONEAPI_ROOT}" >> "${GITHUB_ENV}"
-      echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}" >> "${GITHUB_ENV}"
-      echo "ACL_BOARD_VENDOR_PATH=${ACL_BOARD_VENDOR_PATH}" >> "${GITHUB_ENV}"
-      echo "FPGA_VARS_DIR=${FPGA_VARS_DIR}" >> "${GITHUB_ENV}"
-      echo "DIAGUTIL_PATH=${DIAGUTIL_PATH}" >> "${GITHUB_ENV}"
-      echo "DPL_ROOT=${DPL_ROOT}" >> "${GITHUB_ENV}"
-      echo "MANPATH=${MANPATH}" >> "${GITHUB_ENV}"
-      echo "GDB_INFO=${GDB_INFO}" >> "${GITHUB_ENV}"
-      echo "SETVARS_COMPLETED=${SETVARS_COMPLETED}" >> "${GITHUB_ENV}"
-      echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}" >> "${GITHUB_ENV}"
-      echo "CMPLR_ROOT=${CMPLR_ROOT}" >> "${GITHUB_ENV}"
-      echo "FPGA_VARS_ARGS=${FPGA_VARS_ARGS}" >> "${GITHUB_ENV}"
-      echo "INFOPATH=${INFOPATH}" >> "${GITHUB_ENV}"
-      echo "LIBRARY_PATH=${LIBRARY_PATH}" >> "${GITHUB_ENV}"
-      echo "OCL_ICD_FILENAMES=${OCL_ICD_FILENAMES}" >> "${GITHUB_ENV}"
-      echo "INTELFPGAOCLSDKROOT=${INTELFPGAOCLSDKROOT}" >> "${GITHUB_ENV}"
-      echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> "${GITHUB_ENV}"
-      echo "NLSPATH=${NLSPATH}" >> "${GITHUB_ENV}"
-      echo "INTEL_PYTHONHOME=${INTEL_PYTHONHOME}" >> "${GITHUB_ENV}"
-      echo "CPATH=${CPATH}" >> "${GITHUB_ENV}"
+    run: ${GITHUB_ACTION_PATH}/install_intel.sh ${{ inputs.compiler }}
 
   - name: Export configs
     shell: bash
