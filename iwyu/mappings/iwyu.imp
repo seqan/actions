@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: CC-BY-4.0
 
 [
+  { "ref": "benchmark.imp" },
   { "ref": "clang-23.intrinsics.imp" },
   { "ref": "gcc.libc.imp" },
   { "ref": "libcxx.imp" },
