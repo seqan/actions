@@ -4,7 +4,7 @@
 
 # libc++ headers
 [
-  # sed 's@\(.*{ include: \[ \"\)\(<__\w*/\).*\(>\", \"private\",.*\)@\1\@\2\.\*\3@g' /usr/lib/llvm-20/include/c++/v1/libcxx.imp | sort -u | grep "@" | grep -v "@<__fwd/"
+  # sed 's@\(.*{ include: \[ \"\)\(<__\w*/\).*\(>\", \"private\",.*\)@\1\@\2\.\*\3@g' /usr/lib/llvm-23/include/c++/v1/libcxx.imp | sort -u | grep "@" | grep -v "@<__fwd/"
   # __thread should only have <thread>
   { include: [ "@<__algorithm/.*>", "private", "<algorithm>", "public" ] },
   { include: [ "@<__atomic/.*>", "private", "<atomic>", "public" ] },
@@ -21,6 +21,7 @@
   { include: [ "@<__expected/.*>", "private", "<expected>", "public" ] },
   { include: [ "@<__filesystem/.*>", "private", "<filesystem>", "public" ] },
   { include: [ "@<__flat_map/.*>", "private", "<flat_map>", "public" ] },
+  { include: [ "@<__flat_set/.*>", "private", "<flat_set>", "public" ] },
   { include: [ "@<__format/.*>", "private", "<format>", "public" ] },
   { include: [ "@<__functional/.*>", "private", "<functional>", "public" ] },
   { include: [ "@<__ios/.*>", "private", "<ios>", "public" ] },
@@ -46,7 +47,7 @@
   { include: [ "@<__variant/.*>", "private", "<variant>", "public" ] },
   { include: [ "@<__vector/.*>", "private", "<vector>", "public" ] },
 
-  # grep "<__fwd/" /usr/lib/llvm-20/include/c++/v1/libcxx.imp
+  # grep "<__fwd/" /usr/lib/llvm-23/include/c++/v1/libcxx.imp
   { include: [ "<__fwd/array.h>", "private", "<array>", "public" ] },
   { include: [ "<__fwd/bit_reference.h>", "private", "<bitset>", "public" ] },
   { include: [ "<__fwd/bit_reference.h>", "private", "<vector>", "public" ] },
@@ -75,7 +76,7 @@
   { include: [ "<__fwd/variant.h>", "private", "<variant>", "public" ] },
   { include: [ "<__fwd/vector.h>", "private", "<vector>", "public" ] },
 
-  # sed 's@\(.*{ include: \[ \"\)\(<__\w*/\).*\(>\", \"private\",.*\)@\1\@\2\.\*\3@g' /usr/lib/llvm-20/include/c++/v1/libcxx.imp | sort -u | grep -v "@"
+  # sed 's@\(.*{ include: \[ \"\)\(<__\w*/\).*\(>\", \"private\",.*\)@\1\@\2\.\*\3@g' /usr/lib/llvm-23/include/c++/v1/libcxx.imp | sort -u | grep -v "@"
   { include: [ "<__bit_reference>", "private", "<bitset>", "public" ] },
   { include: [ "<__bit_reference>", "private", "<vector>", "public" ] },
   { include: [ "<__config>", "private", "<version>", "public" ] },

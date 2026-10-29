@@ -4,8 +4,8 @@
 # SPDX-FileCopyrightText: 2016-2025 Knut Reinert & MPI für molekulare Genetik
 # SPDX-License-Identifier: CC-BY-4.0
 
-# 20 is just a default value in case no version is provided
-ARG CLANG_VERSION=20
+# 23 is just a default value in case no version is provided
+ARG CLANG_VERSION=23
 FROM ghcr.io/seqan/clang-${CLANG_VERSION}
 
 ARG CLANG_VERSION

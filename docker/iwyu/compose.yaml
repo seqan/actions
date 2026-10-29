@@ -8,5 +8,5 @@ services:
     pull_policy: never
     build:
       args:
-        CLANG_VERSION: 20
-        IWYU_VERSION: 0.24
+        CLANG_VERSION: 23
+        IWYU_VERSION: 0.27
