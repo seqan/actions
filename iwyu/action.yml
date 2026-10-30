@@ -68,7 +68,6 @@ runs:
         CMAKE_IWYU+="-Xiwyu;--cxx17ns;"
         CMAKE_IWYU+="-Xiwyu;--transitive_includes_only;"
         CMAKE_IWYU+="-Xiwyu;--check_also=**/include/${{ github.event.repository.name }}/**.hpp;"
-        CMAKE_IWYU+="-Xiwyu;--no_default_mappings;"
         CMAKE_IWYU+="-Xiwyu;--mapping_file=${GITHUB_ACTION_PATH}/mappings/iwyu.imp;"
         if [[ -n "${{ inputs.additional_mapping }}" ]]; then
           CMAKE_IWYU+="-Xiwyu;--mapping_file=${{ steps.normalized_paths.outputs.additional_mapping }};"

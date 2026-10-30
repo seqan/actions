@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: 2006-2026, Knut Reinert & Freie Universität Berlin
+# SPDX-FileCopyrightText: 2016-2026, Knut Reinert & MPI für molekulare Genetik
+# SPDX-License-Identifier: CC-BY-4.0
+
+# Google Benchmark 1.10.0 split <benchmark/benchmark.h> into several headers that it includes.
+# Keep suggesting <benchmark/benchmark.h>, which also works with older versions of Google Benchmark.
+[
+  # cd include/benchmark ; ls *.h | grep -v "^benchmark.h$" | LC_ALL=C sort | sed -e 's#\(.*\)#  { "include": ["<benchmark/\1>", "private", "<benchmark/benchmark.h>", "public"] },#'
+  { "include": ["<benchmark/benchmark_api.h>", "private", "<benchmark/benchmark.h>", "public"] },
+  { "include": ["<benchmark/counter.h>", "private", "<benchmark/benchmark.h>", "public"] },
+  { "include": ["<benchmark/export.h>", "private", "<benchmark/benchmark.h>", "public"] },
+  { "include": ["<benchmark/macros.h>", "private", "<benchmark/benchmark.h>", "public"] },
+  { "include": ["<benchmark/managers.h>", "private", "<benchmark/benchmark.h>", "public"] },
+  { "include": ["<benchmark/registration.h>", "private", "<benchmark/benchmark.h>", "public"] },
+  { "include": ["<benchmark/reporter.h>", "private", "<benchmark/benchmark.h>", "public"] },
+  { "include": ["<benchmark/state.h>", "private", "<benchmark/benchmark.h>", "public"] },
+  { "include": ["<benchmark/statistics.h>", "private", "<benchmark/benchmark.h>", "public"] },
+  { "include": ["<benchmark/sysinfo.h>", "private", "<benchmark/benchmark.h>", "public"] },
+  { "include": ["<benchmark/types.h>", "private", "<benchmark/benchmark.h>", "public"] },
+  { "include": ["<benchmark/utils.h>", "private", "<benchmark/benchmark.h>", "public"] },
+]
