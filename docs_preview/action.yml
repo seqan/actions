@@ -50,6 +50,33 @@ runs:
         fi
         cp "${GITHUB_ACTION_PATH}"/landing/{index.html,style.css,seqan_logo.svg} "${SOURCE}/"
 
+    # Doxygen's include, inheritance, collaboration, call and directory graphs (.svg, and .map with their links) make up
+    # most of a preview's size. Doxygen writes them to the top level of each documentation: the source itself, or user/
+    # and developer/ (checked above). Removed before publish.sh, so its size limit applies to what is published.
+    # -type f: never through a symlink.
+    - name: Remove Doxygen graphs
+      if: inputs.source != ''
+      shell: bash
+      env:
+        SOURCE: ${{ inputs.source }}
+        LANDING_PAGE: ${{ inputs.landing_page }}
+      run: |
+        set -Eeuo pipefail
+        if [[ ${LANDING_PAGE} == true ]]; then
+          dirs=("${SOURCE}/user" "${SOURCE}/developer")
+        else
+          dirs=("${SOURCE}")
+        fi
+        stems=('*__incl' '*__graph' '*_org' '*_cgraph' '*_icgraph' 'inherit_graph_*' 'struct*' 'group__*' 'dir_*_dep'
+               'class*')
+        names=()
+        for stem in "${stems[@]}"; do
+          names+=(-o -name "${stem}.svg" -o -name "${stem}.map")
+        done
+        before=$(du -sm "${SOURCE}" | cut -f1)
+        removed=$(find "${dirs[@]}" -maxdepth 1 -type f \( "${names[@]:1}" \) -printf . -delete | wc -c)
+        echo "Removed ${removed} Doxygen graph files: ${before} MiB -> $(du -sm "${SOURCE}" | cut -f1) MiB."
+
     - name: Update preview branch and trigger the Pages deployment
       shell: bash
       env:
