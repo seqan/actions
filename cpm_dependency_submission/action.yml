@@ -22,7 +22,12 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    # A failed checkout must not fail the job either. dependency_snapshot.sh warns if there is no work tree; if the
+    # checkout itself succeeded (e.g. the credential removal failed on a gitlink without .gitmodules entry, which
+    # `git submodule foreach` rejects), the snapshot is still submitted. The work tree's git config may then still
+    # include the token, which the next step has as GH_TOKEN anyway.
     - name: Checkout
+      continue-on-error: true
       uses: actions/checkout@v7
       with:
         path: cpm_dependency_submission
